@@ -1,0 +1,14 @@
+recipe: default.v1
+assistant_id: forward-property
+language: en
+pipeline:
+- name: CompactLLMCommandGenerator
+  llm:
+    model_group: openai-gpt-4o
+policies:
+- name: FlowPolicy
+- name: IntentlessPolicy
+  llm:
+    model_group: openai-gpt-4o
+  embeddings:
+    model_group: openai-embeddings
