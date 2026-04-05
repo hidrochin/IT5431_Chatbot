@@ -1,0 +1,73 @@
+version: "3.1"
+
+actions:
+  - action_validate_booking_dates
+  - action_check_availability
+
+slots:
+  guest_name:
+    type: text
+    mappings:
+      - type: from_llm
+  guest_email:
+    type: text
+    mappings:
+      - type: from_llm
+  guest_phone:
+    type: text
+    mappings:
+      - type: from_llm
+  check_in_date:
+    type: text
+    mappings:
+      - type: from_llm
+  check_out_date:
+    type: text
+    mappings:
+      - type: from_llm
+  room_count:
+    type: float
+    mappings:
+      - type: from_llm
+  adults_count:
+    type: float
+    mappings:
+      - type: from_llm
+  children_count:
+    type: float
+    mappings:
+      - type: from_llm
+  room_type:
+    type: text
+    mappings:
+      - type: from_llm
+  confirm_booking:
+    type: bool
+    mappings:
+      - type: from_llm
+
+responses:
+  utter_ask_guest_name:
+    - text: "Could I please get your full name for the reservation?"
+  utter_ask_guest_email:
+    - text: "What is the best email address to send your confirmation to?"
+  utter_ask_guest_phone:
+    - text: "And a good phone number to reach you at?"
+  utter_ask_check_in_date:
+    - text: "What date will you be checking in?"
+  utter_ask_check_out_date:
+    - text: "And what is your check-out date?"
+  utter_ask_room_count:
+    - text: "How many rooms will you need?"
+  utter_ask_adults_count:
+    - text: "How many adults will be staying?"
+  utter_ask_children_count:
+    - text: "Will there be any children (under 12) staying with you? If so, how many?"
+  utter_ask_room_type:
+    - text: "We offer Deluxe Rooms, Junior Suites, and Club Suites. Which would you prefer?"
+  utter_ask_confirm_booking:
+    - text: "Perfect. Just to confirm: {room_count} {room_type}(s) for {adults_count} adults and {children_count} children, from {check_in_date} to {check_out_date}. Your contact info is {guest_name}, {guest_email}, {guest_phone}. Shall I go ahead and book this?"
+  utter_booking_confirmed:
+    - text: "You are all set! Your reservation is confirmed. We look forward to welcoming you!"
+  utter_booking_cancelled:
+    - text: "No problem, I have cancelled the booking process. Let me know if you need anything else."

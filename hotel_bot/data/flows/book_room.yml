@@ -1,0 +1,45 @@
+flows:
+  book_room:
+    description: "Use this flow to help a user book a hotel room."
+    steps:
+      # Step 1: Collect Dates
+      - collect: check_in_date
+        description: "The date the user wants to check into the hotel."
+      - collect: check_out_date
+        description: "The date the user wants to check out. Must be after check-in."
+      
+      # Step 2: Validate Dates via Python Action
+      - action: action_validate_booking_dates
+      
+      # Step 3: Collect Room and Guest Details
+      - collect: room_count
+        description: "The total number of rooms the user wishes to book."
+      - collect: adults_count
+        description: "The number of adults (above 12 years old) staying."
+      - collect: children_count
+        description: "The number of children (below 12 years old) staying."
+      - collect: room_type
+        description: "The type of room requested. Options are 'Deluxe', 'Junior Suite', or 'Club Suite'."
+
+      # Step 4: Check Inventory via Python Action
+      - action: action_check_availability
+
+      # Step 5: Collect Contact Information
+      - collect: guest_name
+        description: "The full name of the guest making the reservation."
+      - collect: guest_phone
+        description: "The contact phone number of the guest."
+      - collect: guest_email
+        description: "The email address for sending the booking confirmation."
+      
+      # Step 6: Final Confirmation and Branching Logic
+      - collect: confirm_booking
+        description: "Whether the user explicitly confirms all details to finalize the reservation."
+        next:
+          - if: slots.confirm_booking
+            then:
+              - action: utter_booking_confirmed
+                next: END
+          - else:
+              - action: utter_booking_cancelled
+                next: END
