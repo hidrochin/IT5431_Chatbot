@@ -1,0 +1,25 @@
+{
+  "priority": 5,
+  "nlu_abstention_threshold": 0.9,
+  "prompt_template": null,
+  "llm": {
+    "id": "gemini_llm",
+    "models": [
+      {
+        "model": "gemini-2.0-flash",
+        "provider": "gemini",
+        "api_key": "${GEMINI_API_KEY}"
+      }
+    ]
+  },
+  "embeddings": {
+    "id": "huggingface_llm",
+    "models": [
+      {
+        "model": "gemini-embedding-001",
+        "provider": "gemini",
+        "api_key": "${GEMINI_API_KEY}"
+      }
+    ]
+  }
+}

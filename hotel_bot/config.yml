@@ -1,14 +1,19 @@
 recipe: default.v1
-assistant_id: forward-property
+assistant_id: 20260405-132452-windy-diatonic
 language: en
+
 pipeline:
-- name: CompactLLMCommandGenerator
-  llm:
-    model_group: openai-gpt-4o
+  - name: CompactLLMCommandGenerator
+    llm:
+      model_group: gemini_llm
+    flow_retrieval:
+      embeddings:
+        model_group: huggingface_llm
+
 policies:
-- name: FlowPolicy
-- name: IntentlessPolicy
-  llm:
-    model_group: openai-gpt-4o
-  embeddings:
-    model_group: openai-embeddings
+  - name: FlowPolicy
+  - name: IntentlessPolicy
+    llm:
+      model_group: gemini_llm
+    embeddings:
+      model_group: huggingface_llm

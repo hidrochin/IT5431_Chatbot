@@ -1,0 +1,15 @@
+{
+  "embeddings": {
+    "id": "huggingface_llm",
+    "models": [
+      {
+        "provider": "gemini",
+        "model": "gemini-embedding-001",
+        "api_key": "${GEMINI_API_KEY}"
+      }
+    ]
+  },
+  "num_flows": 20,
+  "turns_to_embed": 1,
+  "should_embed_slots": true
+}
