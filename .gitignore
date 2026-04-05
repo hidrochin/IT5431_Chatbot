@@ -6,3 +6,7 @@
 *.pptx
 *.db
 *.ipynb
+.rasa/
+models/
+.rasa_visualization/
+*.log
