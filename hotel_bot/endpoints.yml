@@ -50,13 +50,15 @@ action_endpoint:
 #   type: rephrase
 
 model_groups:
-  - id: openai-gpt-4o
+  - id: gemini_llm
     models:
-      - provider: openai
-        model: gpt-4o-2024-11-20
-        request_timeout: 7
-        max_tokens: 256
-  - id: openai-embeddings
+      - provider: gemini
+        model: gemini-2.0-flash
+        api_key: "${GEMINI_API_KEY}"
+
+  - id: huggingface_llm
     models:
-      - provider: openai
-        model: text-embedding-3-large
+      - provider: gemini
+        model: gemini-embedding-001
+        api_key: "${GEMINI_API_KEY}"
+

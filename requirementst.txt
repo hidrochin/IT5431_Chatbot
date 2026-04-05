@@ -1,2 +1,4 @@
 rasa-pro
 python-dotenv
+google-generativeai
+sentence-transformers
