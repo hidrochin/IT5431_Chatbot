@@ -1,0 +1,8 @@
+.venv
+*.env
+*.pyc
+*.pdf
+*.zip
+*.pptx
+*.db
+*.ipynb
