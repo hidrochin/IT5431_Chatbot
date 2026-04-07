@@ -1,0 +1,24 @@
+# Step 1: First Confirmation
+      - collect: confirm_cancel_intent
+        description: "Ask the user to confirm they want to begin the cancellation process."
+        next:
+          - if: not slots.confirm_cancel_intent
+            then:
+              - action: utter_cancellation_aborted
+                next: END
+          - else: ask_double_confirm # <-- The canonical way to jump to a step
+
+      # Step 2: The Double Confirmation (Strict Protection)
+      - id: ask_double_confirm
+        collect: double_confirm_cancellation
+        description: "Warn the user that cancellation is irreversible and ask for final confirmation."
+        next:
+          - if: slots.double_confirm_cancellation
+            then:
+              # This would trigger your Python script to update the actual database
+              - action: action_process_cancellation_db 
+              - action: utter_cancellation_success
+                next: END
+          - else:
+              - action: utter_cancellation_aborted
+                next: END

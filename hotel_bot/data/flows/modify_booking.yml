@@ -1,0 +1,15 @@
+flows:
+  modify_booking:
+    description: "Use this flow when a user wants to change details of an existing reservation (e.g., change dates, guests, or room type)."
+    steps:
+      - collect: booking_reference
+        description: "The user's unique alphanumeric booking ID."
+      
+      - collect: slot_to_modify
+        description: "The specific detail the user wants to change. Must be exactly one of: 'check_in_date', 'check_out_date', 'room_type', 'room_count', 'adults_count', 'children_count'."
+      
+      # Python action to dynamically set the identified slot to `null`
+      - action: action_wipe_target_slot 
+      
+      # Jump back to the main booking flow. CALM will automatically notice the wiped slot and ask the user for the new information.
+      - call: book_room

@@ -17,3 +17,4 @@ policies:
       model_group: gemini_llm
     embeddings:
       model_group: huggingface_llm
+    prompt_template: "prompts/intentless.jinja2"

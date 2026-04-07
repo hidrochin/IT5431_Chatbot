@@ -1,0 +1,58 @@
+flows:
+  book_room:
+    description: "Use this flow to help a user book a hotel room."
+    steps:
+      # Step 1: Collect Dates
+      - collect: check_in_date
+        description: "The date the user wants to check into the hotel."
+      - collect: check_out_date
+        description: "The date the user wants to check out. Must be after check-in."
+      
+      # Step 2: Validate Dates via Python Action
+      - action: action_validate_booking_dates
+      
+      # Step 3: Collect Room and Guest Details
+      - collect: room_count
+        description: "The total number of rooms the user wishes to book."
+      - collect: adults_count
+        description: "The number of adults (above 12 years old) staying."
+      - collect: children_count
+        description: "The number of children (below 12 years old) staying."
+      - collect: room_type
+        description: "The type of room requested. Options are 'Deluxe', 'Junior Suite', or 'Club Suite'."
+
+      # Step 4: Check Inventory via Python Action
+      - action: action_check_availability
+        next:
+          # If the Python script wiped the slot (because the room is full), 
+          # loop back to Step 3 to collect the alternative room.
+          - if: not slots.room_type
+            then:
+              - collect: room_type
+                next: ask_special_requests
+          - else: ask_special_requests
+          # If the slot is filled (room is available), proceed normally.
+      # Step 4.5: Collect Special Requests (Strict NLP Rules)
+      - id: ask_special_requests
+        collect: special_requests
+        description: "Any specific preferences the guest mentions for their room or stay (e.g., 'high floor', 'quiet room', 'late checkout'). CRITICAL INSTRUCTION: If the user does not explicitly state a special request, or if they say 'no', you MUST leave this slot as exactly `null`. Do not guess, do not infer, and do not write 'None'."
+
+      # Step 5: Collect Contact Information
+      - collect: guest_name
+        description: "The full name of the guest making the reservation."
+      - collect: guest_phone
+        description: "The contact phone number of the guest."
+      - collect: guest_email
+        description: "The email address for sending the booking confirmation."
+      
+      # Step 6: Final Confirmation and Branching Logic
+      - collect: confirm_booking
+        description: "Whether the user explicitly confirms all details to finalize the reservation."
+        next:
+          - if: slots.confirm_booking
+            then:
+              - action: utter_booking_confirmed
+                next: END
+          - else:
+              - action: utter_booking_cancelled
+                next: END
