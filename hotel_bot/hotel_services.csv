@@ -1,0 +1,9 @@
+﻿service_id,service_code,service_name,category,is_active,description
+S01,housekeeping,Dọn phòng,core,TRUE,Dịch vụ dọn dẹp phòng hàng ngày
+S02,room_service,Phục vụ tại phòng,food,TRUE,Đồ ăn thức uống phục vụ tại phòng
+S03,front_desk,Lễ tân,core,TRUE,Hỗ trợ check-in check-out và giải đáp thắc mắc
+S04,spa_massage,Spa và Massage,wellness,TRUE,Dịch vụ chăm sóc sức khỏe và thư giãn
+S05,restaurant,Nhà hàng,food,TRUE,Phục vụ ăn sáng buffet và gọi món
+S06,laundry,Giặt ủi,service,TRUE,Giặt sấy và là quần áo cho khách
+S07,maintenance,Bảo trì,service,TRUE,Sửa chữa thiết bị điện nước trong phòng
+S08,bell_boy,Hành lý,service,TRUE,Hỗ trợ mang vác hành lý cho khách

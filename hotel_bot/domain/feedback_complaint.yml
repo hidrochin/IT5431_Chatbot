@@ -1,0 +1,86 @@
+version: "3.1"
+
+actions:
+  - action_classify_feedback_complaint
+  - action_validate_request_type
+  - action_lookup_staff_feedback
+  - action_lookup_staff_complaint
+  - action_save_feedback_record
+  - action_save_complaint_record
+  - action_confirm_complaint_assignment
+
+slots:
+  request_type:
+    type: text
+    mappings:
+      - type: from_llm
+  service_code:
+    type: text
+    mappings:
+      - type: from_llm
+  service_date:
+    type: text
+    mappings:
+      - type: from_llm
+  service_sub_context:
+    type: text
+    mappings:
+      - type: from_llm
+  service_time:
+    type: text
+    mappings:
+      - type: from_llm
+  feedback_rating:
+    type: float
+    mappings:
+      - type: from_llm
+  feedback_note:
+    type: text
+    mappings:
+      - type: from_llm
+  room_number:
+    type: text
+    mappings:
+      - type: from_llm
+  complaint_detail:
+    type: text
+    mappings:
+      - type: from_llm
+  severity:
+    type: text
+    mappings:
+      - type: from_llm
+  assigned_staff_id:
+    type: text
+    mappings:
+      - type: controlled
+  assigned_staff_name:
+    type: text
+    mappings:
+      - type: controlled
+
+responses:
+  utter_ask_request_type:
+    - text: "Bạn muốn gửi phản hồi hay báo cáo vấn đề cần xử lý?"
+  utter_ask_service_code:
+    - text: "Bạn đang nói về dịch vụ nào?"
+  utter_ask_service_date:
+    - text: "Bạn sử dụng dịch vụ này vào ngày nào?"
+  utter_ask_service_sub_context:
+    - text: "Bạn gặp vấn đề ở khâu nào của dịch vụ này? (ví dụ: trực quầy, check-in, check-out...)"
+  utter_ask_service_time:
+    - text: "Sự việc xảy ra lúc mấy giờ?"
+  utter_ask_service_input:
+    - text: "Bạn đang nói về dịch vụ nào?"
+  utter_ask_feedback_rating:
+    - text: "Bạn đánh giá dịch vụ này mấy sao? (1–5)"
+  utter_ask_feedback_note:
+    - text: "Bạn có muốn để lại nhận xét thêm không?"
+  utter_complaint_apology:
+    - text: "Mình rất tiếc về trải nghiệm này."
+  utter_ask_room_number:
+    - text: "Bạn đang ở phòng số bao nhiêu?"
+  utter_ask_complaint_detail:
+    - text: "Vấn đề cụ thể là gì?"
+  utter_ask_severity:
+    - text: "Mức độ ảnh hưởng với bạn như thế nào? (low / medium / high)"

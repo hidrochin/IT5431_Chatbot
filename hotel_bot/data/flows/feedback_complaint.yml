@@ -1,0 +1,81 @@
+flows:
+  handle_feedback_or_complaint:
+    description: "Use this flow to classify and handle guest feedback or complaint for hotel services from CSV."
+    steps:
+      - collect: request_type
+        description: "[LLM ONLY] Analyze user message and classify as 'feedback' (praise/positive comment) or 'complaint' (issue/problem report). If unclear, ask exactly: 'Bạn muốn gửi phản hồi hay báo cáo vấn đề cần xử lý?'. Set slot request_type to EXACTLY one of: feedback, complaint."
+        next:
+          - if: slots.request_type == "feedback"
+            then:
+              - collect: service_code
+                description: "[LLM ONLY] Identify the service being mentioned and map it to EXACTLY one canonical code: housekeeping (dọn phòng), room_service (phục vụ phòng), front_desk (lễ tân), spa_massage (spa/massage), restaurant (nhà hàng), laundry (giặt), maintenance (sửa chữa), bell_boy (hành lý). If user says a synonym, normalize to one of these 8 codes. Ask: 'Phản hồi này liên quan dịch vụ nào của khách sạn?' when missing."
+              - collect: service_date
+                description: "Ask service usage date: 'Bạn sử dụng dịch vụ này vào ngày nào?'. If user says 'hôm nay' or does not specify, set service_date to current date."
+                next:
+                  - if: slots.service_code == "housekeeping" or slots.service_code == "room_service" or slots.service_code == "maintenance"
+                    then:
+                      - collect: service_sub_context
+                        description: "[LLM ONLY] Extract feedback sub-context (for notes matching), e.g. 'trực quầy', 'check-in', 'check-out', 'giao đồ ăn', 'sửa điều hòa'. Ask: 'Bạn muốn góp ý ở khâu nào của dịch vụ này?'. Set slot service_sub_context directly from user input."
+                      - collect: service_time
+                        description: "[LLM ONLY] Ask service time: 'Sự việc diễn ra lúc mấy giờ?'. Accept HH:MM or natural input like '6h sáng', '14:30'. Set slot service_time from user answer."
+                      - collect: room_number
+                        description: "For IN-ROOM services, ask exactly: 'Bạn đang ở phòng số bao nhiêu?'."
+                      - collect: feedback_rating
+                        description: "Ask rating from 1-5 stars: 'Bạn đánh giá dịch vụ mấy sao?' Expect a number 1-5."
+                      - collect: feedback_note
+                        description: "Ask optional comment: 'Bạn có lời góp ý thêm không?' (Can be empty/omitted if not provided)"
+                      - action: action_lookup_staff_feedback
+                      - action: action_save_feedback_record
+                        next: END
+                  - else:
+                      - collect: service_sub_context
+                        description: "[LLM ONLY] Extract feedback sub-context (for notes matching), e.g. 'trực quầy', 'check-in', 'check-out'. Ask: 'Bạn muốn góp ý ở khâu nào của dịch vụ này?'. Set slot service_sub_context directly from user input."
+                      - collect: service_time
+                        description: "[LLM ONLY] Ask service time: 'Sự việc diễn ra lúc mấy giờ?'. Accept HH:MM or natural input like '6h sáng', '14:30'. Set slot service_time from user answer."
+                      - collect: room_number
+                        description: "For NON-IN-ROOM services, still ask room for guest context: 'Bạn đang lưu trú ở phòng số bao nhiêu để mình ghi nhận đúng ca hỗ trợ?'."
+                      - collect: feedback_rating
+                        description: "Ask rating from 1-5 stars: 'Bạn đánh giá dịch vụ mấy sao?' Expect a number 1-5."
+                      - collect: feedback_note
+                        description: "Ask optional comment: 'Bạn có lời góp ý thêm không?' (Can be empty/omitted if not provided)"
+                      - action: action_lookup_staff_feedback
+                      - action: action_save_feedback_record
+                        next: END
+          - else:
+              - action: utter_complaint_apology
+              - collect: service_code
+                description: "[LLM ONLY] Identify the complained service and map to EXACTLY one canonical code: housekeeping, room_service, front_desk, spa_massage, restaurant, laundry, maintenance, bell_boy. If input is vague or synonym, normalize to one of these 8 codes. Ask: 'Vấn đề này liên quan dịch vụ nào?' when missing."
+              - collect: service_date
+                description: "Ask service usage date: 'Bạn sử dụng dịch vụ này vào ngày nào?'. If user says 'hôm nay' or does not specify, set service_date to current date."
+                next:
+                  - if: slots.service_code == "housekeeping" or slots.service_code == "room_service" or slots.service_code == "maintenance"
+                    then:
+                      - collect: service_sub_context
+                        description: "[LLM ONLY] Extract the sub-context the user mentions (for notes matching), e.g. 'trực quầy', 'check-in', 'check-out', 'giao đồ ăn', 'sửa điều hòa'. Ask: 'Bạn gặp vấn đề ở khâu nào của dịch vụ này?'. Set slot service_sub_context directly from user input."
+                      - collect: service_time
+                        description: "[LLM ONLY] Ask service time: 'Sự việc xảy ra lúc mấy giờ?'. Accept HH:MM or natural input like '6h sáng', '14:30'. Set slot service_time from user answer."
+                      - collect: room_number
+                        description: "For IN-ROOM services, ask exactly: 'Bạn đang ở phòng số bao nhiêu?'. This room_number will be used for direct assignment matching with service_code + service_date + room_number."
+                      - collect: complaint_detail
+                        description: "Ask for specific complaint: 'Vấn đề cụ thể bạn gặp phải là gì?' - capture detailed description."
+                      - collect: severity
+                        description: "Ask severity level: 'Mức độ ảnh hưởng với bạn như thế nào? (low / medium / high)' and set as one of low, medium, high."
+                      - action: action_lookup_staff_complaint
+                      - action: action_save_complaint_record
+                      - action: action_confirm_complaint_assignment
+                        next: END
+                  - else:
+                      - collect: service_sub_context
+                        description: "[LLM ONLY] Extract the sub-context the user mentions (for notes matching), e.g. 'trực quầy', 'check-in', 'check-out'. Ask: 'Bạn gặp vấn đề ở khâu nào của dịch vụ này?'. Set slot service_sub_context directly from user input."
+                      - collect: service_time
+                        description: "[LLM ONLY] Ask service time: 'Sự việc xảy ra lúc mấy giờ?'. Accept HH:MM or natural input like '6h sáng', '14:30'. Set slot service_time from user answer."
+                      - collect: room_number
+                        description: "For NON-IN-ROOM services, still ask room for guest context: 'Bạn đang lưu trú ở phòng số bao nhiêu để mình kiểm tra hỗ trợ chính xác hơn?'. Do not use room_number as direct matching filter for staff assignment in this branch."
+                      - collect: complaint_detail
+                        description: "Ask for specific complaint: 'Vấn đề cụ thể bạn gặp phải là gì?' - capture detailed description."
+                      - collect: severity
+                        description: "Ask severity level: 'Mức độ ảnh hưởng với bạn như thế nào? (low / medium / high)' and set as one of low, medium, high."
+                      - action: action_lookup_staff_complaint
+                      - action: action_save_complaint_record
+                      - action: action_confirm_complaint_assignment
+                        next: END

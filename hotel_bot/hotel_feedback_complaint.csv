@@ -1,0 +1,33 @@
+﻿id,timestamp,session_id,user_id,request_type,service_type,rating,complaint_detail,severity,status,assigned_to,resolution_note
+F001,2026-04-07T08:30:00,S001,U101,feedback,housekeeping,5,,,closed,HK01,
+F002,2026-04-07T09:15:00,S002,U102,complaint,housekeeping,,Phòng tắm chưa để đủ khăn,low,resolved,HK01,Đã mang thêm khăn lên phòng
+F003,2026-04-07T11:00:00,S003,U103,feedback,maintenance,4,,,closed,MT01,
+F004,2026-04-07T10:30:00,S004,U105,complaint,maintenance,,Điều hòa vẫn kêu to sau khi sửa,medium,resolved,MT01,Bảo trì đã lên thay quạt gió điều hòa
+F005,2026-04-07T15:45:00,S005,U201,feedback,housekeeping,5,,,closed,HK02,
+F006,2026-04-07T16:20:00,S006,U202,complaint,housekeeping,,Dọn phòng ồn ào lúc khách đang ngủ,high,resolved,HK02,Quản lý đã xin lỗi và tặng voucher
+F007,2026-04-07T07:45:00,S007,U101,feedback,room_service,5,,,closed,RS01,
+F008,2026-04-07T13:10:00,S008,U105,complaint,room_service,,Giao đồ ăn trễ 30 phút,medium,resolved,RS01,Đã giảm giá 20% hóa đơn thức ăn
+F009,2026-04-07T18:00:00,S009,U202,feedback,room_service,4,,,closed,RS02,
+F010,2026-04-07T09:00:00,S010,U100,feedback,front_desk,5,,,closed,FD01,
+F011,2026-04-07T11:30:00,S011,U112,complaint,front_desk,,Lễ tân thiếu nhiệt tình khi hỏi đường,low,resolved,FD01,Đã nhắc nhở nhân viên về thái độ
+F012,2026-04-07T15:00:00,S012,U210,feedback,front_desk,3,,,closed,FD02,
+F013,2026-04-07T17:30:00,S013,U211,complaint,front_desk,,Check-in quá lâu do lỗi hệ thống,high,in_progress,FD02,Đang liên hệ IT xử lý nâng cấp máy
+F014,2026-04-07T10:15:00,S014,U301,feedback,spa_massage,5,,,closed,SP01,
+F015,2026-04-07T14:45:00,S015,U302,complaint,spa_massage,,Nước ngâm chân hơi nguội,low,resolved,SP01,Đã đổi nước ấm ngay cho khách
+F016,2026-04-07T08:00:00,S016,U401,feedback,restaurant,4,,,closed,RT01,
+F017,2026-04-07T09:30:00,S017,U402,complaint,restaurant,,Hết món phở lúc 9h sáng,medium,resolved,RT01,Bếp đã bổ sung thêm ngay sau 10 phút
+F018,2026-04-07T19:00:00,S018,U403,feedback,restaurant,5,,,closed,RT02,
+F019,2026-04-07T20:15:00,S019,U404,complaint,restaurant,,Nhạc trong nhà hàng quá to,low,resolved,RT02,Đã vặn nhỏ âm lượng nhạc
+F020,2026-04-07T16:00:00,S020,U201,complaint,maintenance,,Vòi sen rỉ nước chảy yếu,medium,in_progress,MT02,Đang chờ vật tư thay thế
+F021,2026-04-07T12:00:00,S021,U101,feedback,laundry,5,,,closed,LD01,
+F022,2026-04-07T13:45:00,S022,U102,complaint,laundry,,Áo sơ mi ủi chưa thẳng nếp,medium,resolved,LD01,Đã mang đi ủi lại miễn phí
+F023,2026-04-07T07:15:00,S023,U105,feedback,bell_boy,5,,,closed,BB01,
+F024,2026-04-07T15:10:00,S024,U205,complaint,bell_boy,,Hành lý bị xước môt vệt nhỏ,high,resolved,BB02,Khách sạn bồi thường phí sửa vali
+F025,2026-04-07T13:30:00,S025,U104,feedback,housekeeping,4,,,closed,HK01,
+F026,2026-04-07T21:00:00,S026,U205,feedback,room_service,5,,,closed,RS02,
+F027,2026-04-07T15:20:00,S027,U220,feedback,spa_massage,5,,,closed,SP02,
+F028,2026-04-07T21:45:00,S028,U205,complaint,housekeeping,,Phòng chưa có nước suối bổ sung,low,resolved,HK02,
+F029,2026-04-07T23:30:00,S029,U501,complaint,front_desk,,Không có ai ở quầy lúc nửa đêm,high,resolved,FD03,Nhân viên đi lấy đồ đã quay lại xin lỗi
+F030,2026-04-07T22:45:00,S030,U502,complaint,maintenance,,Mất điện cục bộ ổ cắm đầu giường,medium,in_progress,MT03,Kỹ thuật đang kiểm tra tủ điện trên tầng
+F031,2026-04-08T00:15:54,S20260408001554,Yp70IjXSMhpE5E5gAAAD,complaint,bell_boy,,1 nhân viên bê đồ làm thiết bị của tôi bị hỏng,high,in_progress,,
+F032,2026-04-08T00:37:43,S20260408003743,IvqFKIxqDBPZ2Ji8AAAF,complaint,front_desk,,thái độ nhân viên trực quầy ko tốt,high,in_progress,FD02,

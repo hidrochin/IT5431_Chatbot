@@ -1,0 +1,31 @@
+﻿assignment_id,service_code,staff_id,staff_name,department,shift,date,start_time,end_time,room_number,status,notes
+A001,housekeeping,HK01,Nguyễn Thị Mai,Housekeeping,morning,4/1/2026,6:00:00,14:00:00,101,done,Dọn phòng hàng ngày
+A002,housekeeping,HK01,Nguyễn Thị Mai,Housekeeping,morning,4/1/2026,6:00:00,14:00:00,102,done,Dọn phòng hàng ngày
+A003,housekeeping,HK01,Nguyễn Thị Mai,Housekeeping,morning,4/1/2026,6:00:00,14:00:00,103,done,Thay ga giường
+A004,housekeeping,HK01,Nguyễn Thị Mai,Housekeeping,morning,4/1/2026,6:00:00,14:00:00,105,done,Khách trả phòng
+A005,housekeeping,HK02,Trần Thị Lan,Housekeeping,afternoon,4/1/2026,14:00:00,22:00:00,201,done,Dọn phòng buổi chiều
+A006,housekeeping,HK02,Trần Thị Lan,Housekeeping,afternoon,4/1/2026,14:00:00,22:00:00,202,in_progress,Khách yêu cầu thêm khăn
+A007,housekeeping,HK02,Trần Thị Lan,Housekeeping,afternoon,4/1/2026,14:00:00,22:00:00,205,assigned,Thay đồ dùng cá nhân
+A008,housekeeping,HK03,Lê Hữu Đạt,Housekeeping,evening,4/1/2026,22:00:00,6:00:00,301,assigned,Trực đêm tầng 3
+A009,room_service,RS01,Phạm Văn Hùng,F&B,morning,4/1/2026,6:00:00,14:00:00,101,done,Bữa sáng tại phòng
+A010,room_service,RS01,Phạm Văn Hùng,F&B,morning,4/1/2026,6:00:00,14:00:00,105,done,Đồ uống nhẹ
+A011,room_service,RS02,Vũ Thị Hoa,F&B,afternoon,4/1/2026,14:00:00,22:00:00,202,done,Trà chiều
+A012,front_desk,FD01,Nguyễn Văn An,Front Office,morning,4/1/2026,6:00:00,14:00:00,,done,Trực quầy
+A013,front_desk,FD01,Nguyễn Văn An,Front Office,morning,4/1/2026,6:00:00,14:00:00,,done,Hỗ trợ check-out
+A014,front_desk,FD02,Hoàng Thị Tú,Front Office,afternoon,4/1/2026,14:00:00,22:00:00,,in_progress,Trực quầy check-in
+A015,spa_massage,SP01,Nguyễn Phương Thảo,Wellness,morning,4/1/2026,8:00:00,16:00:00,,done,Massage toàn thân 60p
+A016,spa_massage,SP01,Nguyễn Phương Thảo,Wellness,morning,4/1/2026,8:00:00,16:00:00,,done,Chăm sóc da mặt
+A017,restaurant,RT01,Lê Văn Tùng,F&B,morning,4/1/2026,6:00:00,14:00:00,,done,Trực buffet sáng
+A018,restaurant,RT02,Phan Trọng Khang,F&B,afternoon,4/1/2026,14:00:00,22:00:00,,in_progress,Trực nhà hàng tối
+A019,maintenance,MT01,Đinh Văn Cường,Engineering,morning,4/1/2026,6:00:00,14:00:00,103,done,Sửa điều hòa
+A020,maintenance,MT01,Đinh Văn Cường,Engineering,morning,4/1/2026,6:00:00,14:00:00,105,done,Thay bóng đèn
+A021,maintenance,MT02,Bùi Tuấn Anh,Engineering,afternoon,4/1/2026,14:00:00,22:00:00,201,in_progress,Sửa vòi hoa sen
+A022,laundry,LD01,Ngô Thu Hà,Housekeeping,morning,4/1/2026,6:00:00,14:00:00,101,done,Giặt đồ khách VIP
+A023,laundry,LD01,Ngô Thu Hà,Housekeeping,morning,4/1/2026,6:00:00,14:00:00,102,done,Giặt sấy thông thường
+A024,bell_boy,BB01,Lý Quốc Bảo,Front Office,morning,4/1/2026,6:00:00,14:00:00,105,done,Chuyển hành lý check-out
+A025,bell_boy,BB02,Trần Đình Long,Front Office,afternoon,4/1/2026,14:00:00,22:00:00,205,in_progress,Đưa hành lý lên phòng
+A026,housekeeping,HK01,Nguyễn Thị Mai,Housekeeping,morning,4/1/2026,6:00:00,14:00:00,104,done,Dọn phòng
+A027,room_service,RS02,Vũ Thị Hoa,F&B,afternoon,4/1/2026,14:00:00,22:00:00,205,done,Bữa tối tại phòng
+A028,spa_massage,SP02,Võ Thị Kim,Wellness,afternoon,4/1/2026,14:00:00,22:00:00,,in_progress,Trị liệu cổ vai gáy
+A029,front_desk,FD03,Phạm Ngọc Yến,Front Office,evening,4/1/2026,22:00:00,6:00:00,,assigned,Trực đêm
+A030,maintenance,MT03,Hoàng Cảnh,Engineering,evening,4/1/2026,22:00:00,6:00:00,,assigned,Trực sự cố đêm
