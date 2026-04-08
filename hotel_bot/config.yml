@@ -5,15 +5,15 @@ language: en
 pipeline:
   - name: CompactLLMCommandGenerator
     llm:
-      model_group: gemini_llm
+      model_group: openai_llm
     flow_retrieval:
       embeddings:
-        model_group: huggingface_llm
+        model_group: openai_embeddings
 
 policies:
   - name: FlowPolicy
   - name: IntentlessPolicy
     llm:
-      model_group: gemini_llm
+      model_group: openai_llm
     embeddings:
-      model_group: huggingface_llm
+      model_group: openai_embeddings

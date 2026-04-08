@@ -1,0 +1,29 @@
+{
+  "prompt_template": null,
+  "user_input": null,
+  "llm": {
+    "id": "openai_llm",
+    "models": [
+      {
+        "provider": "openai",
+        "model": "gpt-4o",
+        "api_key": "${OPENAI_API_KEY}"
+      }
+    ]
+  },
+  "flow_retrieval": {
+    "embeddings": {
+      "id": "openai_embeddings",
+      "models": [
+        {
+          "provider": "openai",
+          "model": "text-embedding-3-small",
+          "api_key": "${OPENAI_API_KEY}"
+        }
+      ]
+    },
+    "num_flows": 20,
+    "turns_to_embed": 1,
+    "should_embed_slots": true
+  }
+}

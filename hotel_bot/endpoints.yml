@@ -50,15 +50,15 @@ action_endpoint:
 #   type: rephrase
 
 model_groups:
-  - id: gemini_llm
+  - id: openai_llm
     models:
-      - provider: gemini
-        model: gemini-2.0-flash
-        api_key: "${GEMINI_API_KEY}"
+      - provider: openai
+        model: gpt-4o
+        api_key: "${OPENAI_API_KEY}"
 
-  - id: huggingface_llm
+  - id: openai_embeddings
     models:
-      - provider: gemini
-        model: gemini-embedding-001
-        api_key: "${GEMINI_API_KEY}"
+      - provider: openai
+        model: text-embedding-3-small
+        api_key: "${OPENAI_API_KEY}"
 

@@ -1,0 +1,34 @@
+{
+  "priority": 5,
+  "nlu_abstention_threshold": 0.9,
+  "prompt_template": null,
+  "llm": {
+    "id": "openai_llm",
+    "models": [
+      {
+        "model": "gpt-4o",
+        "api_base": null,
+        "api_version": null,
+        "api_type": "openai",
+        "provider": "openai",
+        "temperature": 1.0,
+        "max_completion_tokens": 256,
+        "timeout": 5,
+        "api_key": "${OPENAI_API_KEY}"
+      }
+    ]
+  },
+  "embeddings": {
+    "id": "openai_embeddings",
+    "models": [
+      {
+        "model": "text-embedding-3-small",
+        "api_base": null,
+        "api_version": null,
+        "api_type": "openai",
+        "provider": "openai",
+        "api_key": "${OPENAI_API_KEY}"
+      }
+    ]
+  }
+}
