@@ -24,7 +24,7 @@ slots:
   service_date:
     type: text
     mappings:
-      - type: from_text
+      - type: controlled
   service_sub_context:
     type: text
     mappings:
@@ -32,27 +32,27 @@ slots:
   service_time:
     type: text
     mappings:
-      - type: from_text
+      - type: controlled
   feedback_rating:
     type: float
     mappings:
-      - type: from_text
+      - type: controlled
   feedback_note:
     type: text
     mappings:
-      - type: from_text
+      - type: controlled
   room_number:
     type: text
     mappings:
-      - type: from_text
+      - type: controlled
   complaint_detail:
     type: text
     mappings:
-      - type: from_text
+      - type: controlled
   severity:
     type: text
     mappings:
-      - type: from_text
+      - type: controlled
   assigned_staff_id:
     type: text
     mappings:
