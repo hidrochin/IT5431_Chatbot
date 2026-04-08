@@ -55,7 +55,18 @@ model_groups:
       - provider: gemini
         model: gemini-2.5-flash
         api_key: "${GEMINI_API_KEY}"
-
+  - id: mistral_llm
+    models:
+      - provider: mistral
+        model: mistral-small-2603
+        api_key: "${MISTRAL_API_KEY}"
+  - id: local_llm
+    models:
+      - provider: openai
+        model: qwen2.5-vl-7b-instruct
+        api_base: "http://127.0.0.1:1234/v1"
+        api_key: "${LM_STUDIO_API_KEY}"
+        timeout: 200
   - id: huggingface_llm
     models:
       - provider: gemini

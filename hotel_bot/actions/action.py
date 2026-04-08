@@ -90,9 +90,9 @@ FEEDBACK_COMPLAINT_CSV = os.path.join(BASE_DIR, "hotel_feedback_complaint.csv")
 
 ASSIGNMENT_LLM_ENDPOINT = os.getenv("ASSIGNMENT_LLM_ENDPOINT", "").strip()
 ASSIGNMENT_LLM_API_KEY = os.getenv("ASSIGNMENT_LLM_API_KEY", "").strip()
-ASSIGNMENT_LLM_MODEL = os.getenv("ASSIGNMENT_LLM_MODEL", "gpt-4o-mini").strip()
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "").strip()
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash").strip()
+ASSIGNMENT_LLM_MODEL = os.getenv("ASSIGNMENT_LLM_MODEL", "lm-studio").strip()
+if not ASSIGNMENT_LLM_ENDPOINT:
+    ASSIGNMENT_LLM_ENDPOINT = "http://127.0.0.1:1234/v1/chat/completions"
 
 VALID_SERVICE_CODES = {
     "housekeeping", "room_service", "front_desk", "spa_massage",
@@ -104,35 +104,45 @@ DEFAULT_NON_IN_ROOM_SERVICE_CODES = {"front_desk", "spa_massage", "restaurant", 
 
 SERVICE_CODE_SYNONYMS = {
     "housekeeping": {
-        "housekeeping", "don phong", "dọn phòng", "ve sinh phong", "dich vu don phong"
+        "housekeeping", "don phong", "dọn phòng", "ve sinh phong", "vệ sinh phòng", 
+        "dich vu don phong", "dịch vụ dọn phòng", "ve sinh", "vệ sinh"
     },
     "room_service": {
-        "room_service", "room service", "phuc vu phong", "phục vụ phòng", "do an tai phong"
+        "room_service", "room service", "phuc vu phong", "phục vụ phòng", 
+        "do an tai phong", "đồ ăn tại phòng", "dich vu phong", "dịch vụ phòng"
     },
     "front_desk": {
-        "front_desk", "front desk", "le tan", "lễ tân", "quay le tan", "quầy lễ tân"
+        "front_desk", "front desk", "le tan", "lễ tân", "quay le tan", "quầy lễ tân",
+        "truc quay", "trực quầy", "truc ban", "trực ban", "check in", "check-in", 
+        "check out", "check-out", "checkin", "checkout", "nhan phong", "nhận phòng",
+        "tra phong", "trả phòng"
     },
     "spa_massage": {
-        "spa_massage", "spa massage", "spa", "massage", "spa va massage"
+        "spa_massage", "spa massage", "spa", "massage", "spa va massage", "spa và massage"
     },
     "restaurant": {
-        "restaurant", "nha hang", "nhà hàng", "buffet"
+        "restaurant", "nha hang", "nhà hàng", "buffet", "an sang", "ăn sáng",
+        "an trua", "ăn trưa", "an toi", "ăn tối"
     },
     "laundry": {
-        "laundry", "giat ui", "giặt ủi", "giat do", "giặt đồ"
+        "laundry", "giat ui", "giặt ủi", "giat do", "giặt đồ", "ui do", "ủi đồ",
+        "dich vu giat", "dịch vụ giặt"
     },
     "maintenance": {
-        "maintenance", "bao tri", "bảo trì", "sua chua", "sửa chữa", "ky thuat", "kỹ thuật"
+        "maintenance", "bao tri", "bảo trì", "sua chua", "sửa chữa", 
+        "ky thuat", "kỹ thuật", "hong", "hỏng", "dieu hoa", "điều hòa",
+        "dien nuoc", "điện nước"
     },
     "bell_boy": {
-        "bell_boy", "bell boy", "hanh ly", "hành lý", "be hanh ly", "bê hành lý", "xach do", "xách đồ"
+        "bell_boy", "bell boy", "hanh ly", "hành lý", "be hanh ly", "bê hành lý", 
+        "xach do", "xách đồ", "vali", "va li", "mang do", "mang đồ"
     },
 }
 
 SEVERITY_SYNONYMS = {
-    "low": {"low", "nhe", "nhẹ", "thap", "thấp"},
-    "medium": {"medium", "trung binh", "trung bình", "vua", "vừa"},
-    "high": {"high", "cao", "nghiem trong", "nghiêm trọng", "rat nghiem trong", "rất nghiêm trọng"},
+    "low": {"low", "nhe", "nhẹ", "thap", "thấp", "khong anh huong", "không ảnh hưởng"},
+    "medium": {"medium", "trung binh", "trung bình", "vua", "vừa", "binh thuong", "bình thường"},
+    "high": {"high", "cao", "nang", "nặng", "nghiem trong", "nghiêm trọng", "rat nghiem trong", "rất nghiêm trọng", "rat nang", "rất nặng"},
 }
 
 
@@ -141,6 +151,14 @@ def _normalize_text(value: Any) -> str:
     text = unicodedata.normalize("NFD", text)
     text = "".join(ch for ch in text if unicodedata.category(ch) != "Mn")
     return " ".join(text.split())
+
+
+def _latest_user_text(tracker: Tracker) -> str:
+    """Safely read latest user text from tracker without raising on missing payload."""
+    latest_message = getattr(tracker, "latest_message", None)
+    if not isinstance(latest_message, dict):
+        return ""
+    return str(latest_message.get("text") or "")
 
 
 def _load_csv_rows(file_path: str) -> List[Dict[str, str]]:
@@ -397,70 +415,7 @@ def _llm_choose_assignment_id(
         "user_context": context_text,
     }
 
-    # Preferred path: call Gemini directly when GEMINI_API_KEY is available.
-    if GEMINI_API_KEY:
-        gemini_url = (
-            "https://generativelanguage.googleapis.com/v1beta/models/"
-            f"{urllib.parse.quote(GEMINI_MODEL)}:generateContent?key={urllib.parse.quote(GEMINI_API_KEY)}"
-        )
-        gemini_instruction = (
-            "You are selecting the best assignment for a complaint from a shortlist. "
-            "Pick exactly one assignment_id from the shortlist based on notes relevance, status, and time fit. "
-            "Return strict JSON only: {\"assignment_id\": \"<id>\"} or {\"assignment_id\": null}."
-        )
-        gemini_user_payload = json.dumps(
-            {"context": prompt_context, "shortlist": shortlist},
-            ensure_ascii=False,
-        )
-        gemini_body = {
-            "contents": [{"parts": [{"text": gemini_user_payload}]}],
-            "systemInstruction": {"parts": [{"text": gemini_instruction}]},
-            "generationConfig": {"temperature": 0, "responseMimeType": "application/json"},
-        }
-
-        request = urllib.request.Request(
-            gemini_url,
-            data=json.dumps(gemini_body).encode("utf-8"),
-            headers={"Content-Type": "application/json"},
-            method="POST",
-        )
-
-        try:
-            with urllib.request.urlopen(request, timeout=8) as response:
-                raw = response.read().decode("utf-8", errors="ignore")
-        except (urllib.error.URLError, TimeoutError, ValueError):
-            raw = ""
-
-        if raw:
-            try:
-                parsed = json.loads(raw)
-            except json.JSONDecodeError:
-                parsed = None
-
-            llm_text = ""
-            if isinstance(parsed, dict):
-                candidates = parsed.get("candidates")
-                if isinstance(candidates, list) and candidates:
-                    first = candidates[0]
-                    if isinstance(first, dict):
-                        content = first.get("content")
-                        if isinstance(content, dict):
-                            parts = content.get("parts")
-                            if isinstance(parts, list) and parts:
-                                first_part = parts[0]
-                                if isinstance(first_part, dict):
-                                    llm_text = str(first_part.get("text") or "")
-
-            if not llm_text:
-                llm_text = raw
-
-            obj = _extract_json_object(llm_text)
-            if obj:
-                candidate_id = str(obj.get("assignment_id") or "").strip()
-                if candidate_id in valid_ids:
-                    return candidate_id
-
-    # Secondary path: custom OpenAI-compatible endpoint.
+    # Use a local OpenAI-compatible endpoint (LM Studio by default).
     if not ASSIGNMENT_LLM_ENDPOINT:
         return None
 
@@ -722,7 +677,7 @@ class ActionClassifyFeedbackComplaint(Action):
         if existing_request_type in {"feedback", "complaint"}:
             return [SlotSet("request_type", existing_request_type)]
 
-        latest_text = _normalize_text(tracker.latest_message.get("text", ""))
+        latest_text = _normalize_text(_latest_user_text(tracker))
 
         complaint_keywords = {
             "complaint", "problem", "issue", "bad", "not good", "terrible",
@@ -743,11 +698,127 @@ class ActionClassifyFeedbackComplaint(Action):
         return [SlotSet("request_type", None), FollowupAction("action_listen")]
 
 
+class ActionValidateServiceCode(Action):
+    """Validate and canonicalize service_code from user input."""
+    
+    def name(self) -> Text:
+        return "action_validate_service_code"
+
+    def run(
+        self,
+        dispatcher: CollectingDispatcher,
+        tracker: Tracker,
+        domain: Dict[Text, Any]
+    ) -> List[Dict[Text, Any]]:
+        # Get the service_code slot value or latest user message
+        service_code_slot = tracker.get_slot("service_code")
+        latest_text = _normalize_text(_latest_user_text(tracker))
+        
+        # Try to canonicalize from slot first
+        if service_code_slot:
+            canonical = _canonicalize_service_code(str(service_code_slot))
+            if canonical:
+                return [SlotSet("service_code", canonical)]
+        
+        # Try to extract from latest user message
+        if latest_text:
+            canonical = _canonicalize_service_code(latest_text)
+            if canonical:
+                return [SlotSet("service_code", canonical)]
+            
+            # Try partial matching for common Vietnamese terms
+            service_mapping = {
+                "le tan": "front_desk",
+                "truc quay": "front_desk",
+                "truc ban": "front_desk",
+                "check in": "front_desk",
+                "check out": "front_desk",
+                "don phong": "housekeeping",
+                "ve sinh": "housekeeping",
+                "phuc vu phong": "room_service",
+                "room service": "room_service",
+                "nha hang": "restaurant",
+                "buffet": "restaurant",
+                "giat ui": "laundry",
+                "giat do": "laundry",
+                "ky thuat": "maintenance",
+                "bao tri": "maintenance",
+                "sua chua": "maintenance",
+                "spa": "spa_massage",
+                "massage": "spa_massage",
+                "hanh ly": "bell_boy",
+                "vali": "bell_boy",
+            }
+            
+            for keyword, code in service_mapping.items():
+                if keyword in latest_text:
+                    return [SlotSet("service_code", code)]
+        
+        # If still can't determine, ask user again
+        dispatcher.utter_message(text="Bạn đang nói về dịch vụ nào? (lễ tân, dọn phòng, phục vụ phòng, nhà hàng, giặt ủi, kỹ thuật, spa/massage, hành lý)")
+        return [SlotSet("service_code", None), FollowupAction("action_listen")]
 
 
+class ActionValidateSeverity(Action):
+    """Validate and canonicalize severity from user input."""
+    
+    def name(self) -> Text:
+        return "action_validate_severity"
+
+    def run(
+        self,
+        dispatcher: CollectingDispatcher,
+        tracker: Tracker,
+        domain: Dict[Text, Any]
+    ) -> List[Dict[Text, Any]]:
+        # Get the severity slot value or latest user message
+        severity_slot = tracker.get_slot("severity")
+        latest_text = _normalize_text(_latest_user_text(tracker))
+        
+        # Try to canonicalize from slot first
+        if severity_slot:
+            canonical = _canonicalize_severity(str(severity_slot))
+            if canonical:
+                return [SlotSet("severity", canonical)]
+        
+        # Try to extract from latest user message
+        if latest_text:
+            canonical = _canonicalize_severity(latest_text)
+            if canonical:
+                return [SlotSet("severity", canonical)]
+        
+        # If still can't determine, ask user again
+        dispatcher.utter_message(text="Mức độ ảnh hưởng với bạn như thế nào? Vui lòng chọn: thấp (low), vừa phải (medium), hoặc cao/nặng (high)")
+        return [SlotSet("severity", None), FollowupAction("action_listen")]
 
 
+class ActionValidateServiceSubContext(Action):
+    """Validate and accept service_sub_context from user input."""
+    
+    def name(self) -> Text:
+        return "action_validate_service_sub_context"
 
+    def run(
+        self,
+        dispatcher: CollectingDispatcher,
+        tracker: Tracker,
+        domain: Dict[Text, Any]
+    ) -> List[Dict[Text, Any]]:
+        # Get the service_sub_context slot or latest user message
+        sub_context_slot = tracker.get_slot("service_sub_context")
+        latest_text = _normalize_text(_latest_user_text(tracker))
+        
+        # If slot was set, keep it
+        if sub_context_slot:
+            return []
+        
+        # If user provided text, use it directly
+        if latest_text:
+            return [SlotSet("service_sub_context", _latest_user_text(tracker).strip())]
+        
+        # If nothing, ask again
+        dispatcher.utter_message(text="Bạn gặp vấn đề ở khâu nào của dịch vụ này? (ví dụ: trực quầy, check-in, check-out)")
+        return [SlotSet("service_sub_context", None), FollowupAction("action_listen")]
 
 
 class ActionLookupStaffFeedback(Action):

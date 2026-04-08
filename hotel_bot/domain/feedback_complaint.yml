@@ -3,6 +3,9 @@ version: "3.1"
 actions:
   - action_classify_feedback_complaint
   - action_validate_request_type
+  - action_validate_service_code
+  - action_validate_service_sub_context
+  - action_validate_severity
   - action_lookup_staff_feedback
   - action_lookup_staff_complaint
   - action_save_feedback_record
@@ -63,7 +66,7 @@ responses:
   utter_ask_request_type:
     - text: "Bạn muốn gửi phản hồi hay báo cáo vấn đề cần xử lý?"
   utter_ask_service_code:
-    - text: "Bạn đang nói về dịch vụ nào?"
+    - text: "Bạn đang nói về dịch vụ nào? (lễ tân/front desk, dọn phòng, phục vụ phòng, nhà hàng, giặt ủi, kỹ thuật, spa/massage, hành lý)"
   utter_ask_service_date:
     - text: "Bạn sử dụng dịch vụ này vào ngày nào?"
   utter_ask_service_sub_context:
@@ -83,4 +86,4 @@ responses:
   utter_ask_complaint_detail:
     - text: "Vấn đề cụ thể là gì?"
   utter_ask_severity:
-    - text: "Mức độ ảnh hưởng với bạn như thế nào? (low / medium / high)"
+    - text: "Mức độ ảnh hưởng với bạn như thế nào? (thấp/low, vừa phải/medium, hoặc cao/nặng/high)"

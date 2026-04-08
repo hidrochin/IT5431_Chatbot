@@ -1,21 +1,24 @@
 flows:
   handle_feedback_or_complaint:
-    description: "Use this flow to classify and handle guest feedback or complaint for hotel services from CSV."
+    description: "Dùng flow này khi khách muốn phản hồi, góp ý, phàn nàn, khiếu nại, báo lỗi dịch vụ khách sạn; phân loại feedback/complaint và xử lý theo dữ liệu CSV. Ở lượt đầu chỉ được xác định request_type, không set các slot khác (service_code, service_sub_context, service_time, room_number, complaint_detail, severity, feedback_rating, feedback_note) trước khi flow hỏi theo thứ tự."
     steps:
       - collect: request_type
-        description: "[LLM ONLY] Analyze user message and classify as 'feedback' (praise/positive comment) or 'complaint' (issue/problem report). If unclear, ask exactly: 'Bạn muốn gửi phản hồi hay báo cáo vấn đề cần xử lý?'. Set slot request_type to EXACTLY one of: feedback, complaint."
+        description: "[LLM ONLY] Analyze user message and classify as 'feedback' (praise/positive comment) or 'complaint' (issue/problem report). If unclear, ask exactly: 'Bạn muốn gửi phản hồi hay báo cáo vấn đề cần xử lý?'. Set slot request_type to EXACTLY one of: feedback, complaint. IMPORTANT: In this step, do NOT set any other slot besides request_type."
         next:
           - if: slots.request_type == "feedback"
             then:
               - collect: service_code
-                description: "[LLM ONLY] Identify the service being mentioned and map it to EXACTLY one canonical code: housekeeping (dọn phòng), room_service (phục vụ phòng), front_desk (lễ tân), spa_massage (spa/massage), restaurant (nhà hàng), laundry (giặt), maintenance (sửa chữa), bell_boy (hành lý). If user says a synonym, normalize to one of these 8 codes. Ask: 'Phản hồi này liên quan dịch vụ nào của khách sạn?' when missing."
+                ask_before_filling: true
+                description: "[LLM ONLY] EXTRACT service_code from user input. DIRECT MAPPING (use immediately when user says): 'lễ tân'/'le tan'/'front desk'/'trực quầy'/'trực ban' => SET service_code='front_desk' | 'dọn phòng'/'don phong' => SET service_code='housekeeping' | 'phục vụ phòng'/'room service' => SET service_code='room_service' | 'nhà hàng'/'nha hang'/'buffet' => SET service_code='restaurant' | 'giặt ủi'/'giat ui' => SET service_code='laundry' | 'kỹ thuật'/'ky thuat'/'sửa chữa' => SET service_code='maintenance' | 'spa'/'massage' => SET service_code='spa_massage' | 'hành lý'/'hanh ly'/'vali' => SET service_code='bell_boy'. OUTPUT MUST BE ONE OF: front_desk, housekeeping, room_service, restaurant, laundry, maintenance, spa_massage, bell_boy."
+              # - action: action_validate_service_code
               - collect: service_date
                 description: "Ask service usage date: 'Bạn sử dụng dịch vụ này vào ngày nào?'. If user says 'hôm nay' or does not specify, set service_date to current date."
                 next:
                   - if: slots.service_code == "housekeeping" or slots.service_code == "room_service" or slots.service_code == "maintenance"
                     then:
                       - collect: service_sub_context
-                        description: "[LLM ONLY] Extract feedback sub-context (for notes matching), e.g. 'trực quầy', 'check-in', 'check-out', 'giao đồ ăn', 'sửa điều hòa'. Ask: 'Bạn muốn góp ý ở khâu nào của dịch vụ này?'. Set slot service_sub_context directly from user input."
+                        ask_before_filling: true
+                        description: "[LLM ONLY] BẮT BUỘC trích xuất service_sub_context thành 1 cụm NGẮN theo ngữ nghĩa để đối chiếu notes. ƯU TIÊN MAP TRỰC TIẾP nếu user nói: 'trực quầy'/'trực ban' => 'trực quầy'; 'check in'/'check-in'/'nhận phòng' => 'check-in'; 'check out'/'check-out'/'trả phòng' => 'check-out'; 'giao đồ ăn'; 'sửa điều hòa'; 'bổ sung khăn'. Nếu user trả lời chỉ 1 cụm ngắn hợp lệ (ví dụ: 'trực quầy', 'trực quầy rồi'), PHẢI set slot ngay và KHÔNG hỏi lại. Chỉ hỏi lại khi user thật sự chưa nêu khâu cụ thể, dùng đúng câu: 'Bạn muốn góp ý ở khâu nào của dịch vụ này?'."
                       - collect: service_time
                         description: "[LLM ONLY] Ask service time: 'Sự việc diễn ra lúc mấy giờ?'. Accept HH:MM or natural input like '6h sáng', '14:30'. Set slot service_time from user answer."
                       - collect: room_number
@@ -24,12 +27,14 @@ flows:
                         description: "Ask rating from 1-5 stars: 'Bạn đánh giá dịch vụ mấy sao?' Expect a number 1-5."
                       - collect: feedback_note
                         description: "Ask optional comment: 'Bạn có lời góp ý thêm không?' (Can be empty/omitted if not provided)"
+                      - action: action_validate_severity
                       - action: action_lookup_staff_feedback
                       - action: action_save_feedback_record
                         next: END
                   - else:
                       - collect: service_sub_context
-                        description: "[LLM ONLY] Extract feedback sub-context (for notes matching), e.g. 'trực quầy', 'check-in', 'check-out'. Ask: 'Bạn muốn góp ý ở khâu nào của dịch vụ này?'. Set slot service_sub_context directly from user input."
+                        ask_before_filling: true
+                        description: "[LLM ONLY] BẮT BUỘC trích xuất service_sub_context thành 1 cụm NGẮN theo ngữ nghĩa để đối chiếu notes. ƯU TIÊN MAP TRỰC TIẾP nếu user nói: 'trực quầy'/'trực ban' => 'trực quầy'; 'check in'/'check-in'/'nhận phòng' => 'check-in'; 'check out'/'check-out'/'trả phòng' => 'check-out'. Nếu user trả lời chỉ 1 cụm ngắn hợp lệ (ví dụ: 'trực quầy', 'trực quầy rồi'), PHẢI set slot ngay và KHÔNG hỏi lại. Chỉ hỏi lại khi user thật sự chưa nêu khâu cụ thể, dùng đúng câu: 'Bạn muốn góp ý ở khâu nào của dịch vụ này?'."
                       - collect: service_time
                         description: "[LLM ONLY] Ask service time: 'Sự việc diễn ra lúc mấy giờ?'. Accept HH:MM or natural input like '6h sáng', '14:30'. Set slot service_time from user answer."
                       - collect: room_number
@@ -38,20 +43,24 @@ flows:
                         description: "Ask rating from 1-5 stars: 'Bạn đánh giá dịch vụ mấy sao?' Expect a number 1-5."
                       - collect: feedback_note
                         description: "Ask optional comment: 'Bạn có lời góp ý thêm không?' (Can be empty/omitted if not provided)"
+                      - action: action_validate_severity
                       - action: action_lookup_staff_feedback
                       - action: action_save_feedback_record
                         next: END
           - else:
               - action: utter_complaint_apology
               - collect: service_code
-                description: "[LLM ONLY] Identify the complained service and map to EXACTLY one canonical code: housekeeping, room_service, front_desk, spa_massage, restaurant, laundry, maintenance, bell_boy. If input is vague or synonym, normalize to one of these 8 codes. Ask: 'Vấn đề này liên quan dịch vụ nào?' when missing."
+                ask_before_filling: true
+                description: "[LLM ONLY] EXTRACT service_code from user input. DIRECT MAPPING (use immediately when user says): 'lễ tân'/'le tan'/'front desk'/'trực quầy'/'trực ban' => SET service_code='front_desk' | 'dọn phòng'/'don phong' => SET service_code='housekeeping' | 'phục vụ phòng'/'room service' => SET service_code='room_service' | 'nhà hàng'/'nha hang'/'buffet' => SET service_code='restaurant' | 'giặt ủi'/'giat ui' => SET service_code='laundry' | 'kỹ thuật'/'ky thuat'/'sửa chữa' => SET service_code='maintenance' | 'spa'/'massage' => SET service_code='spa_massage' | 'hành lý'/'hanh ly'/'vali' => SET service_code='bell_boy'. OUTPUT MUST BE ONE OF: front_desk, housekeeping, room_service, restaurant, laundry, maintenance, spa_massage, bell_boy."
+              # - action: action_validate_service_code
               - collect: service_date
                 description: "Ask service usage date: 'Bạn sử dụng dịch vụ này vào ngày nào?'. If user says 'hôm nay' or does not specify, set service_date to current date."
                 next:
                   - if: slots.service_code == "housekeeping" or slots.service_code == "room_service" or slots.service_code == "maintenance"
                     then:
                       - collect: service_sub_context
-                        description: "[LLM ONLY] Extract the sub-context the user mentions (for notes matching), e.g. 'trực quầy', 'check-in', 'check-out', 'giao đồ ăn', 'sửa điều hòa'. Ask: 'Bạn gặp vấn đề ở khâu nào của dịch vụ này?'. Set slot service_sub_context directly from user input."
+                        ask_before_filling: true
+                        description: "[LLM ONLY] BẮT BUỘC trích xuất service_sub_context thành 1 cụm NGẮN theo ngữ nghĩa để đối chiếu notes. ƯU TIÊN MAP TRỰC TIẾP nếu user nói: 'trực quầy'/'trực ban' => 'trực quầy'; 'check in'/'check-in'/'nhận phòng' => 'check-in'; 'check out'/'check-out'/'trả phòng' => 'check-out'; 'giao đồ ăn'; 'sửa điều hòa'. Nếu user trả lời chỉ 1 cụm ngắn hợp lệ (ví dụ: 'trực quầy', 'trực quầy rồi'), PHẢI set slot ngay và KHÔNG hỏi lại. Chỉ hỏi lại khi user thật sự chưa nêu khâu cụ thể, dùng đúng câu: 'Bạn gặp vấn đề ở khâu nào của dịch vụ này?'."
                       - collect: service_time
                         description: "[LLM ONLY] Ask service time: 'Sự việc xảy ra lúc mấy giờ?'. Accept HH:MM or natural input like '6h sáng', '14:30'. Set slot service_time from user answer."
                       - collect: room_number
@@ -59,14 +68,16 @@ flows:
                       - collect: complaint_detail
                         description: "Ask for specific complaint: 'Vấn đề cụ thể bạn gặp phải là gì?' - capture detailed description."
                       - collect: severity
-                        description: "Ask severity level: 'Mức độ ảnh hưởng với bạn như thế nào? (low / medium / high)' and set as one of low, medium, high."
+                        description: "Ask severity level: 'Mức độ ảnh hưởng với bạn như thế nào?' Accepts: thấp/low, vừa phài/medium, cao/nặng/high"
+                      - action: action_validate_severity
                       - action: action_lookup_staff_complaint
                       - action: action_save_complaint_record
                       - action: action_confirm_complaint_assignment
                         next: END
                   - else:
                       - collect: service_sub_context
-                        description: "[LLM ONLY] Extract the sub-context the user mentions (for notes matching), e.g. 'trực quầy', 'check-in', 'check-out'. Ask: 'Bạn gặp vấn đề ở khâu nào của dịch vụ này?'. Set slot service_sub_context directly from user input."
+                        ask_before_filling: true
+                        description: "[LLM ONLY] BẮT BUỘC trích xuất service_sub_context thành 1 cụm NGẮN theo ngữ nghĩa để đối chiếu notes. ƯU TIÊN MAP TRỰC TIẾP nếu user nói: 'trực quầy'/'trực ban' => 'trực quầy'; 'check in'/'check-in'/'nhận phòng' => 'check-in'; 'check out'/'check-out'/'trả phòng' => 'check-out'. Nếu user trả lời chỉ 1 cụm ngắn hợp lệ (ví dụ: 'trực quầy', 'trực quầy rồi'), PHẢI set slot ngay và KHÔNG hỏi lại. Chỉ hỏi lại khi user thật sự chưa nêu khâu cụ thể, dùng đúng câu: 'Bạn gặp vấn đề ở khâu nào của dịch vụ này?'."
                       - collect: service_time
                         description: "[LLM ONLY] Ask service time: 'Sự việc xảy ra lúc mấy giờ?'. Accept HH:MM or natural input like '6h sáng', '14:30'. Set slot service_time from user answer."
                       - collect: room_number
@@ -74,7 +85,8 @@ flows:
                       - collect: complaint_detail
                         description: "Ask for specific complaint: 'Vấn đề cụ thể bạn gặp phải là gì?' - capture detailed description."
                       - collect: severity
-                        description: "Ask severity level: 'Mức độ ảnh hưởng với bạn như thế nào? (low / medium / high)' and set as one of low, medium, high."
+                        description: "Ask severity level: 'Mức độ ảnh hưởng với bạn như thế nào?' Accepts: thấp/low, vừa phài/medium, cao/nặng/high"
+                      - action: action_validate_severity
                       - action: action_lookup_staff_complaint
                       - action: action_save_complaint_record
                       - action: action_confirm_complaint_assignment
