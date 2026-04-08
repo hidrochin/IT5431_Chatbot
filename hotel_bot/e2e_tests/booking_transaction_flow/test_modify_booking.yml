@@ -1,6 +1,6 @@
 test_cases:
   - test_case: "The Context-Switch Test: Modifying guest count"
-    description: "Proves the bot can identify a specific slot, wipe it, and seamlessly drop the user back into collection mode."
+    # description: "Proves the bot can identify a specific slot, wipe it, and seamlessly drop the user back into collection mode."
     steps:
       - user: "I want to change the details of my booking."
       - bot: "Please provide your booking reference ID."

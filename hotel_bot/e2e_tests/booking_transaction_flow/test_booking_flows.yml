@@ -1,6 +1,6 @@
 test_cases:
   - test_case: "Test 1: The Happy Path (Seamless Extraction)"
-    description: "Proves that CALM can extract multiple slots accurately and trigger the Happy Path confirmation."
+    # description: "Proves that CALM can extract multiple slots accurately and trigger the Happy Path confirmation."
     steps:
       - user: "Hi, I need to book a Deluxe room for 2 adults from tomorrow until next Friday. My name is Nguyen Van A, phone 0901234567, email a.nguyen@test.com."
       - slot_was_set:
@@ -24,7 +24,7 @@ test_cases:
       - bot: utter_booking_confirmed
 
   - test_case: "Test 2: The Logic Trap (Past Date & 14-Day Limit Protection)"
-    description: "Proves the Python backend catches illegal dates and gracefully resets the slots without breaking the dialogue graph."
+    # description: "Proves the Python backend catches illegal dates and gracefully resets the slots without breaking the dialogue graph."
     steps:
       - user: "I want to book a room starting yesterday for 20 days."
       - slot_was_set:
@@ -42,7 +42,7 @@ test_cases:
           - check_in_date: "next Monday" # Proves the slot is successfully locked in on the second try
 
   - test_case: "Test 3: Mid-Flow Correction (Context Switching)"
-    description: "Proves CALM's non-linear flexibility by handling a user changing their mind mid-conversation."
+    # description: "Proves CALM's non-linear flexibility by handling a user changing their mind mid-conversation."
     steps:
       - user: "I need 1 room for 2 adults."
       - slot_was_set:

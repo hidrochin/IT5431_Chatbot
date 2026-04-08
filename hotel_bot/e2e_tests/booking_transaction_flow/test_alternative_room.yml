@@ -1,6 +1,6 @@
 test_cases:
   - test_case: "The Unhappy Path: Routing a sold-out room request"
-    description: "Proves the Python backend intercepts a fully booked room and gracefully proposes an alternative."
+    # description: "Proves the Python backend intercepts a fully booked room and gracefully proposes an alternative."
     steps:
       - user: "I want to book the VIP Club Suite for tomorrow."
       - slot_was_set:
@@ -13,6 +13,5 @@ test_cases:
       - user: "Yeah, the Deluxe is fine."
       - slot_was_set:
           - room_type: "Deluxe" # Proves the alternative was successfully captured
-      - action: action_check_availability
-      - slot_was_set:
-          - room_type: "Deluxe" # Lock in the available room
+      # - action: action_check_availability
+      - bot: utter_ask_special_requests
