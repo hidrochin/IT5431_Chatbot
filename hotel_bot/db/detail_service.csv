@@ -1,0 +1,8 @@
+service_category,service_type,price,duration,description 
+Spa,Massage,400000,60 phút,"Massage thư giãn toàn thân, giúp giảm căng thẳng và mệt mỏi" 
+Spa,Hot Stone,500000,75 phút,"Massage với đá nóng, giúp tăng tuần hoàn máu và thư giãn cơ bắp" 
+Spa,Aromatherapy,450000,60 phút,"Massage với tinh dầu thiên nhiên, mang lại cảm giác thư giãn và tinh thần sảng khoái" 
+Food,Buffet,200000,120 phút,"Buffet đa dạng món Á – Âu, có món chay và hải sản" 
+Food,A la carte,150000,90 phút,"Thực đơn gọi món theo yêu cầu, phục vụ tận bàn" 
+Laundry,Standard,80000,24 giờ,"Giặt thường, xử lý quần áo nhẹ nhàng, phơi và là cơ bản" 
+Laundry,Express,120000,6 giờ,"Giặt nhanh, lấy quần áo trong ngày, có ủi kỹ lưỡng" 

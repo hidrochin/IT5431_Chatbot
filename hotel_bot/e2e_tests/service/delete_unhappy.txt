@@ -1,0 +1,11 @@
+test_cases:
+  - test_case: "cancel booking failed due to 2-hour policy"
+    steps:
+      - user: "I want to cancel my booking"
+      - bot: "Could you please provide your Booking Reference ID?"
+      - user: "5"
+      - slot_was_set:
+          - booking_service_id: "5"
+      - slot_was_set:
+          - is_cancellable: false
+      - bot: "Cancellation failed. This service cannot be cancelled within 2 hours."

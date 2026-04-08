@@ -1,0 +1,14 @@
+test_cases:
+  - test_case: "Inquiry all active promotions"
+    steps:
+      - user: "Are there any promotions available?"
+      - bot: "Which service are you interested in? (You can say 'all' to see all deals)"
+      - user: "Show me all of them"
+      - slot_was_set:
+          - service_category: "all"
+      - bot: |-
+          Here are all available promotions today:
+          - [Food] Food Buffet Special: 20% off Buffet → 160,000 VND
+          - [Food] Food A la carte Offer: 10% off A la carte → 135,000 VND
+          - [Laundry] Laundry Express Promo: 5% off Express → 114,000 VND
+          - [Laundry] Laundry Standard Deal: 0% off Standard → 80,000 VND
