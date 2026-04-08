@@ -1,0 +1,36 @@
+version: "3.1"
+
+flows:
+  order_service_flow:
+    description: "Flow đặt dịch vụ khách sạn hoặc spa, bao gồm số lượng, thời gian, ghi chú và thông tin liên hệ."
+    steps:
+      # Thu thập thông tin dịch vụ
+      - collect: service_type_order
+        description: "Tên dịch vụ muốn đặt."
+      - collect: quantity
+        description: "Số lượng suất/dịch vụ."
+      - collect: date
+        description: "Ngày sử dụng dịch vụ."
+      - collect: time
+        description: "Giờ sử dụng dịch vụ."
+      - collect: note
+        description: "Ghi chú thêm (ví dụ phòng, yêu cầu đặc biệt)."
+
+      # Thu thập thông tin khách hàng
+      - collect: user_name
+        description: "Tên khách hàng để xác nhận booking."
+      - collect: phone_number
+        description: "Số điện thoại liên hệ."
+
+      # Xác nhận booking
+      - action: utter_confirm_order
+      - collect: confirm_order
+        description: "User xác nhận booking có đúng chưa."
+        next:
+          - if: slots.confirm_order 
+            then:
+              - action: action_create_order
+                next: END
+          - else:
+              - action: utter_cancel_order
+                next: END

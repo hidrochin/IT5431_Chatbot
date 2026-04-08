@@ -1,0 +1,8 @@
+version: "3.1"
+
+flows:
+  list_services:
+    description: "Xem danh sách dịch vụ mà khách sạn cung cấp cho khách hàng"
+
+    steps:
+      - action: action_list_services

@@ -1,0 +1,167 @@
+version: "3.1"
+
+actions:
+  - action_list_services
+  - action_service_detail
+  - action_create_order
+  - action_modify_service
+
+slots:
+  service_type:
+    type: text
+    mappings:
+      - type: from_llm
+  
+  service_type_order:
+    type: text
+    mappings:
+      - type: from_llm
+
+  confirm_order:
+    type: bool
+    mappings:
+      - type: from_llm
+
+  quantity:
+    type: float
+    mappings:
+      - type: from_llm
+
+  date:
+    type: text
+    mappings:
+      - type: from_llm
+
+  time:
+    type: text
+    mappings:
+      - type: from_llm
+
+  note:
+    type: text
+    mappings:
+      - type: from_llm
+
+  user_name:
+    type: text
+    mappings:
+      - type: from_llm
+
+  phone_number:
+    type: text
+    mappings:
+      - type: from_llm
+
+  user_name_modify:
+    type: text
+    mappings:
+      - type: from_llm
+
+  phone_number_modify:
+    type: text
+    mappings:
+      - type: from_llm
+
+  service_type_modify:
+    type: text
+    mappings:
+      - type: from_llm
+
+  quantity_modify:
+    type: float
+    mappings:
+      - type: from_llm
+
+  confirm_modify:
+    type: bool
+    mappings:
+      - type: from_llm
+
+  date_modify:
+    type: text
+    mappings:
+      - type: from_llm
+
+  time_modify:
+    type: text
+    mappings:
+      - type: from_llm
+
+  note_modify:
+    type: text
+    mappings:
+      - type: from_llm
+
+responses:
+  utter_ask_service_type:
+    - text: "👉 Bạn muốn xem chi tiết dịch vụ nào? (ví dụ: Massage, Buffet...)"
+  utter_ask_service_type_order:
+    - text: "Bạn muốn đặt dịch vụ nào?"
+  utter_ask_quantity:
+    - text: "Bạn cần bao nhiêu suất/dịch vụ?"
+  utter_ask_date:
+    - text: "Bạn muốn sử dụng vào ngày nào?"
+  utter_ask_time:
+    - text: "Bạn muốn đặt vào lúc mấy giờ?"
+  utter_ask_note:
+    - text: "Bạn có ghi chú gì thêm không?"
+  utter_ask_user_name:
+    - text: "Xin vui lòng cho mình biết tên của bạn?"
+  utter_ask_phone_number:
+    - text: "Cho mình xin số điện thoại để xác nhận đặt dịch vụ."
+  utter_ask_confirm_order:
+    - text: "Bạn có muốn xác nhận đơn đặt dịch vụ không?"
+
+  utter_ask_user_name_modify:
+    - text: "Xin cho mình biết tên khách hàng để xác thực booking sửa dịch vụ."
+  utter_ask_phone_number_modify:
+    - text: "Cho mình số điện thoại để xác thực booking sửa dịch vụ."
+  utter_ask_confirm_modify:
+    - text: "Bạn có muốn xác nhận thay đổi dịch vụ không?"
+
+  utter_confirm_order:
+    - text: |
+        Bạn xác nhận đặt:
+        - Dịch vụ: {service_type_order}
+        - Ngày: {date}
+        - Giờ: {time}
+        - Số lượng: {quantity}
+        - Ghi chú: {note}
+        - Tên: {user_name}
+        - Số điện thoại: {phone_number}
+        -> Nhập "yes" để xác nhận hoặc "no" để hủy.
+
+  utter_order_success:
+    - text: "🎉 Đặt dịch vụ thành công! Chúng tôi đã ghi nhận thông tin."
+
+  
+  utter_cancel_order:
+    - text: "❌ Đã hủy đặt dịch vụ."
+
+  utter_ask_service_type_modify:
+    - text: "Bạn muốn sửa dịch vụ nào đã đặt?"
+  utter_ask_quantity_modify:
+    - text: "Bạn muốn đổi số lượng thành bao nhiêu?"
+  utter_ask_date_modify:
+    - text: "Bạn muốn đổi ngày thành ngày nào?"
+  utter_ask_time_modify:
+    - text: "Bạn muốn đổi giờ thành mấy giờ?"
+  utter_ask_note_modify:
+    - text: "Bạn muốn đổi ghi chú thành gì?"
+
+  utter_confirm_modify:
+    - text: |
+        Bạn có chắc chắn muốn cập nhật dịch vụ không?
+        - Dịch vụ: {service_type_modify}
+        - Số lượng mới: {quantity_modify}
+        - Ngày mới: {date_modify}
+        - Giờ mới: {time_modify}
+        - Ghi chú mới: {note_modify}
+        -> Nhập "yes" để xác nhận hoặc "no" để hủy.
+
+  utter_modify_success:
+    - text: "✅ Dịch vụ của bạn đã được cập nhật thành công!"
+
+
+  utter_cancel_modify:
+    - text: "❌ Đã hủy cập nhật dịch vụ."

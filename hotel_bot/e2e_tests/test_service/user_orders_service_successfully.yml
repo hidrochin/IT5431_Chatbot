@@ -1,0 +1,38 @@
+test_cases:
+  - test_case: Khách hàng đặt dịch vụ thành công
+    steps:
+      - user: Tôi muốn đặt dịch vụ Massage
+      - utter: utter_ask_user_name
+      - user: Tên tôi là Trần Thị B
+      - slot_was_set:
+          - user_name: "Trần Thị B"
+      - utter: utter_ask_phone_number
+      - user: 0987654321
+      - slot_was_set:
+          - phone_number: "0987654321"
+      - utter: utter_ask_service_type_order
+      - user: Massage
+      - slot_was_set:
+          - service_type_order: "Massage"
+      - utter: utter_ask_quantity
+      - user: Tôi cần 1 suất
+      - slot_was_set:
+          - quantity: 1.0
+      - utter: utter_ask_date
+      - user: Ngày mai
+      - slot_was_set:
+          - date: "2026-04-09"
+      - utter: utter_ask_time
+      - user: Lúc 15:00
+      - slot_was_set:
+          - time: "15:00"
+      - utter: utter_ask_note
+      - user: Phòng 305 xin vui lòng
+      - slot_was_set:
+          - note: "Phòng 305"
+      - utter: utter_ask_confirm_order
+      - user: Vâng, xác nhận
+      - slot_was_set:
+          - confirm_order: true
+      - action: action_create_order
+      - utter: utter_order_confirmed

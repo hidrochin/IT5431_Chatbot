@@ -1,0 +1,39 @@
+version: "3.1"
+
+flows:
+  modify_service:
+    description: "Flow này giúp user sửa thông tin dịch vụ đã đặt, bao gồm số lượng, thời gian, ghi chú."
+    steps:
+      # Xác thực thông tin khách hàng
+      - collect: user_name_modify
+        description: "Tên khách hàng để xác thực booking."
+      - collect: phone_number_modify
+        description: "Số điện thoại để xác thực booking."
+
+      # Chọn dịch vụ muốn sửa
+      - collect: service_type_modify
+        description: "Tên dịch vụ mà user muốn sửa (phải có trong booking của khách)."
+
+      # Thu thập thông tin muốn sửa
+      - collect: quantity_modify
+        description: "Số lượng mới (nếu muốn thay đổi)."
+      - collect: date_modify
+        description: "Ngày mới (nếu muốn thay đổi)."
+      - collect: time_modify
+        description: "Giờ mới (nếu muốn thay đổi)."
+      - collect: note_modify
+        description: "Ghi chú mới (nếu muốn thay đổi)."
+
+      # Xác nhận thay đổi
+      - action: utter_confirm_modify
+      
+      - collect: confirm_modify
+        description: "User xác nhận các thay đổi."
+        next:
+          - if: slots.confirm_modify 
+            then:
+              - action: action_modify_service
+                next: END
+          - else:
+              - action: utter_cancel_modify
+                next: END
