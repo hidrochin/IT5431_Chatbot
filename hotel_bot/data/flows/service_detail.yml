@@ -7,3 +7,4 @@ flows:
     steps:
       - collect: service_type
       - action: action_service_detail
+      

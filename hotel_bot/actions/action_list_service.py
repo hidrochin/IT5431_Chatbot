@@ -31,6 +31,5 @@ class ActionListServices(Action):
                 message += f" - {item}\n"
 
         dispatcher.utter_message(text=message.strip())
-        dispatcher.utter_message(text="👉 Bạn muốn xem chi tiết dịch vụ nào?")
 
         return []

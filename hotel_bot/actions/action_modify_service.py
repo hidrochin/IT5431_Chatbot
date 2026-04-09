@@ -16,12 +16,6 @@ class ActionModifyService(Action):
         # Lấy thông tin dịch vụ muốn sửa
         service_type_modify = tracker.get_slot("service_type_modify")
 
-        # Lấy thông tin mới
-        quantity_modify = tracker.get_slot("quantity_modify")
-        date_modify = tracker.get_slot("date_modify")
-        time_modify = tracker.get_slot("time_modify")
-        note_modify = tracker.get_slot("note_modify")
-
         if not user_name or not phone_number or not service_type_modify:
             dispatcher.utter_message(text="Xin lỗi, thiếu thông tin để xác thực và sửa dịch vụ.")
             return []
@@ -50,6 +44,12 @@ class ActionModifyService(Action):
 
         # Cập nhật thông tin mới (chỉ cập nhật những gì có giá trị)
         updated_booking = booking_found.copy()
+
+        # Lấy thông tin mới
+        quantity_modify = tracker.get_slot("quantity_modify")
+        date_modify = tracker.get_slot("date_modify")
+        time_modify = tracker.get_slot("time_modify")
+        note_modify = tracker.get_slot("note_modify")
 
         if quantity_modify is not None:
             updated_booking["quantity"] = str(quantity_modify)
