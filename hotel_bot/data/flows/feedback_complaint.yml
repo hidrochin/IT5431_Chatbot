@@ -29,7 +29,6 @@ flows:
                         description: "Ask rating from 1-5 stars: 'Bạn đánh giá dịch vụ mấy sao?' Expect a number 1-5."
                       - collect: feedback_note
                         description: "Ask optional comment: 'Bạn có lời góp ý thêm không?' (Can be empty/omitted if not provided)"
-                      - action: action_validate_severity
                       - action: action_lookup_staff_feedback
                       - action: action_save_feedback_record
                         next: END
@@ -45,7 +44,6 @@ flows:
                         description: "Ask rating from 1-5 stars: 'Bạn đánh giá dịch vụ mấy sao?' Expect a number 1-5."
                       - collect: feedback_note
                         description: "Ask optional comment: 'Bạn có lời góp ý thêm không?' (Can be empty/omitted if not provided)"
-                      - action: action_validate_severity
                       - action: action_lookup_staff_feedback
                       - action: action_save_feedback_record
                         next: END
