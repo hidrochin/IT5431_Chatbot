@@ -2,9 +2,8 @@ version: "3.1"
 
 flows:
   service_detail:
-    description: "Xem chi tiết dịch vụ như massage, buffet, giặt ủi"
+    description: "View service details such as massage, buffet, laundry"
 
     steps:
       - collect: service_type
       - action: action_service_detail
-      

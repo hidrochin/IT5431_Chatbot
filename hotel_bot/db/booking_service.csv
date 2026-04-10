@@ -3,4 +3,4 @@ booking_service_id,user_name,phone_number,service_category,service_type,service_
 2,Trần Thị B,0987654321,Food,Buffet,2026-04-07 12:00,2,400000,Buffet trưa
 3,Lê Văn C,0901234567,Laundry,Express,2026-04-07 09:00,3,360000,Giặt nhanh
 4,Tu,0339928911,Spa,Massage,2026-04-08 16:00,2.0,800000,tumodify
-5,Tu2,0334310399,Food,Buffet,2026-04-09 12:00,2,400000,tu_n2
+5,Tu2,0334310399,Food,Buffet,2026-04-10 13:00,1.0,200000,Tunote

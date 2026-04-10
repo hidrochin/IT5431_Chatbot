@@ -2,30 +2,30 @@ version: "3.1"
 
 flows:
   order_service_flow:
-    description: "Flow đặt dịch vụ khách sạn hoặc spa, bao gồm số lượng, thời gian, ghi chú và thông tin liên hệ."
+    description: "Flow for booking hotel or spa services, including quantity, time, notes, and contact information."
     steps:
-      # Thu thập thông tin dịch vụ
+      # Collect service information
       - collect: service_type_order
-        description: "Tên dịch vụ muốn đặt."
+        description: "Name of the service to book."
       - collect: quantity
-        description: "Số lượng suất/dịch vụ."
+        description: "Number of slots/services."
       - collect: date
-        description: "Ngày sử dụng dịch vụ."
+        description: "Date to use the service."
       - collect: time
-        description: "Giờ sử dụng dịch vụ."
+        description: "Time to use the service."
       - collect: note
-        description: "Ghi chú thêm (ví dụ phòng, yêu cầu đặc biệt)."
+        description: "Additional notes (e.g., room number, special requests)."
 
-      # Thu thập thông tin khách hàng
+      # Collect customer information
       - collect: user_name
-        description: "Tên khách hàng để xác nhận booking."
+        description: "Customer name to confirm the booking."
       - collect: phone_number
-        description: "Số điện thoại liên hệ."
+        description: "Contact phone number."
 
-      # Xác nhận booking
+      # Confirm booking
       - action: utter_confirm_order
       - collect: confirm_order
-        description: "User xác nhận booking có đúng chưa."
+        description: "User confirms whether the booking is correct."
         next:
           - if: slots.confirm_order 
             then:

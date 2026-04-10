@@ -16,14 +16,14 @@ class ActionListServices(Action):
                 for row in reader:
                     services[row["service_category"]].append(row["service_type"])
         except:
-            dispatcher.utter_message(text="Không đọc được dữ liệu dịch vụ")
+            dispatcher.utter_message(text="Unable to read service data")
             return []
 
         if not services:
-            dispatcher.utter_message(text="Hiện chưa có dịch vụ nào")
+            dispatcher.utter_message(text="No services available at the moment")
             return []
 
-        message = "🏨 Danh sách dịch vụ:\n"
+        message = "🏨 List of services:\n"
 
         for category, items in services.items():
             message += f"\n{category}:\n"

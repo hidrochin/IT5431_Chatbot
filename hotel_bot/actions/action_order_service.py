@@ -12,38 +12,38 @@ class ActionCreateOrder(Action):
     def run(self, dispatcher, tracker, domain):
         os.makedirs(os.path.dirname(self.file_booking), exist_ok=True)
 
-        # Lấy slot
+        # Get slots
         service_type_order = tracker.get_slot("service_type_order")  # UC3 input
         quantity = tracker.get_slot("quantity") or 1
         date = tracker.get_slot("date")
         time = tracker.get_slot("time")
         note = tracker.get_slot("note") or ""
-        user_name = tracker.get_slot("user_name") or "Khách"
-        phone_number = tracker.get_slot("phone_number") or "Chưa có"
+        user_name = tracker.get_slot("user_name") or "Guest"
+        phone_number = tracker.get_slot("phone_number") or "Not provided"
 
         if not service_type_order or not date or not time:
-            dispatcher.utter_message(text="Xin lỗi, thiếu thông tin để tạo booking.")
+            dispatcher.utter_message(text="Sorry, missing information to create booking.")
             return []
 
-        # Đọc CSV service_detail (service_type)
+        # Read CSV service_detail (service_type)
         service_db = {}
         if os.path.exists(self.file_service):
             with open(self.file_service, "r", encoding="utf-8") as f:
                 reader = csv.DictReader(f)
                 for row in reader:
-                    # key là service_name lower (giả sử giống tên user nhập)
+                    # key is service_name lower (assumed to match user input)
                     service_db[row["service_type"].lower()] = {
                         "category": row["service_category"],
                         "price": int(row["price"]),
-                        "type": row["service_type"]  # để ghi CSV booking
+                        "type": row["service_type"]  # to write to booking CSV
                     }
         else:
-            dispatcher.utter_message(text="File dịch vụ không tồn tại.")
+            dispatcher.utter_message(text="Service file does not exist.")
             return []
 
         service_key = service_type_order.lower()
         if service_key not in service_db:
-            dispatcher.utter_message(text=f"Xin lỗi, chúng tôi không có dịch vụ '{service_type_order}'.")
+            dispatcher.utter_message(text=f"Sorry, we do not have the service '{service_type_order}'.")
             return []
 
         category = service_db[service_key]["category"]
@@ -58,7 +58,7 @@ class ActionCreateOrder(Action):
         total_price = quantity * price
         service_time = f"{date} {time}"
 
-        # CSV booking đã có header, append trực tiếp
+        # CSV booking already has header, append directly
         max_id = 0
         if os.path.exists(self.file_booking):
             with open(self.file_booking, "r", encoding="utf-8") as f:
@@ -68,7 +68,7 @@ class ActionCreateOrder(Action):
                     max_id = max(ids)
         new_id = max_id + 1
 
-        # Đảm bảo file kết thúc với newline trước khi append
+        # Ensure file ends with newline before appending
         if os.path.exists(self.file_booking):
             with open(self.file_booking, "rb") as f:
                 content = f.read()
@@ -76,20 +76,20 @@ class ActionCreateOrder(Action):
                     with open(self.file_booking, "ab") as f:
                         f.write(b'\n')
 
-        # Ghi thêm booking mới
+        # Write new booking
         with open(self.file_booking, "a", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
             writer.writerow([new_id, user_name, phone_number, category, service_type,
                              service_time, quantity, total_price, note])
 
-        # Phản hồi bot
-        dispatcher.utter_message(text=f"🎉 Đặt dịch vụ thành công! Booking ID: {new_id}\n"
-                                      f"- Dịch vụ: {service_type_order}\n"
-                                      f"- Ngày/giờ: {service_time}\n"
-                                      f"- Số lượng: {quantity}\n"
-                                      f"- Tổng giá: {total_price} VNĐ\n"
-                                      f"- Tên: {user_name}\n"
-                                      f"- SĐT: {phone_number}\n"
-                                      f"- Ghi chú: {note}")
+        # Bot response
+        dispatcher.utter_message(text=f"🎉 Service booking successful! Booking ID: {new_id}\n"
+                                      f"- Service: {service_type_order}\n"
+                                      f"- Date/Time: {service_time}\n"
+                                      f"- Quantity: {quantity}\n"
+                                      f"- Total price: {total_price} VND\n"
+                                      f"- Name: {user_name}\n"
+                                      f"- Phone: {phone_number}\n"
+                                      f"- Note: {note}")
 
         return []
