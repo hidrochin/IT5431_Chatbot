@@ -156,9 +156,24 @@ def _normalize_text(value: Any) -> str:
 def _latest_user_text(tracker: Tracker) -> str:
     """Safely read latest user text from tracker without raising on missing payload."""
     latest_message = getattr(tracker, "latest_message", None)
-    if not isinstance(latest_message, dict):
-        return ""
-    return str(latest_message.get("text") or "")
+    if isinstance(latest_message, dict):
+        text = str(latest_message.get("text") or "").strip()
+        if text:
+            return text
+
+    # CALM/e2e can call actions before latest_message is populated.
+    # Fallback: scan tracker events and return the most recent user text.
+    events = getattr(tracker, "events", None)
+    if isinstance(events, list):
+        for event in reversed(events):
+            if not isinstance(event, dict):
+                continue
+            if event.get("event") != "user":
+                continue
+            text = str(event.get("text") or "").strip()
+            if text:
+                return text
+    return ""
 
 
 def _load_csv_rows(file_path: str) -> List[Dict[str, str]]:
@@ -992,7 +1007,6 @@ class ActionSaveFeedbackRecord(Action):
         }
 
         _write_feedback_or_complaint_row(record)
-        dispatcher.utter_message(response="utter_feedback_result_success")
         return [SlotSet("service_code", service_code), SlotSet("feedback_rating", str(feedback_rating))]
 
 
