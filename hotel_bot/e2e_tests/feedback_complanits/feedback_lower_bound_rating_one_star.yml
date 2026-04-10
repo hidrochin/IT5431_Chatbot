@@ -1,0 +1,28 @@
+test_cases:
+  - test_case: feedback lower bound rating one star
+    steps:
+      - user: Tôi muốn gửi feedback về nhà hàng
+      - slot_was_set:
+          - request_type: feedback
+      - utter: utter_ask_service_code
+      - user: restaurant
+      - slot_was_set:
+          - service_code: restaurant
+      - utter: utter_ask_service_date
+      - user: "ngày 1 tháng 4 năm 2026"
+      - utter: utter_ask_service_sub_context
+      - user: buffet sáng
+      - slot_was_set:
+          - service_sub_context: buffet sáng
+      - utter: utter_ask_service_time
+      - user: "08:30"
+      - utter: utter_ask_room_number
+      - user: "401"
+      - utter: utter_ask_feedback_rating
+      - user: "1"
+      - utter: utter_ask_feedback_note
+      - user: Món ăn chưa hợp khẩu vị
+      - slot_was_set:
+          - assigned_staff_id: RT02
+          - assigned_staff_name: Phan Trọng Khang
+      - utter: utter_feedback_result_success

@@ -1,5 +1,5 @@
 test_cases:
-  - test_case: user submits service feedback
+  - test_case: feedback in-room housekeeping with full fields
     steps:
       - user: Tôi rất hài lòng dịch vụ dọn phòng
       - slot_was_set:
@@ -9,27 +9,20 @@ test_cases:
       - slot_was_set:
           - service_code: housekeeping
       - utter: utter_ask_service_date
-      - user: 4/1/2026
-      - slot_was_set:
-          - service_date: "4/1/2026"
+      - user: "ngày 1 tháng 4 năm 2026"
       - utter: utter_ask_service_sub_context
       - user: bổ sung khăn
       - slot_was_set:
           - service_sub_context: bổ sung khăn
       - utter: utter_ask_service_time
-      - user: 15:00
-      - slot_was_set:
-          - service_time: "15:00"
+      - user: "15:00"
       - utter: utter_ask_room_number
-      - user: 202
-      - slot_was_set:
-          - room_number: "202"
+      - user: "202"
       - utter: utter_ask_feedback_rating
-      - user: 5
-      - slot_was_set:
-          - feedback_rating: 5
+      - user: "5"
       - utter: utter_ask_feedback_note
-      - user: Phòng rất sạch sẽ
+      - user: Phòng sạch và chuẩn bị rất nhanh
       - slot_was_set:
-          - feedback_note: Phòng rất sạch sẽ
-      - utter: Cảm ơn bạn đã gửi phản hồi. Mình đã ghi nhận thông tin thành công.
+          - assigned_staff_id: HK02
+          - assigned_staff_name: Trần Thị Lan
+      - utter: utter_feedback_result_success

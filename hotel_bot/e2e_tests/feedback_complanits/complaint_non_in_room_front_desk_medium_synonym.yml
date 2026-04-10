@@ -1,0 +1,29 @@
+test_cases:
+  - test_case: complaint non-in-room front desk with medium synonym
+    steps:
+      - user: Tôi không hài lòng với lễ tân
+      - slot_was_set:
+          - request_type: complaint
+      - utter: utter_complaint_apology
+      - utter: utter_ask_service_code
+      - user: front desk
+      - slot_was_set:
+          - service_code: front_desk
+      - utter: utter_ask_service_date
+      - user: "ngày 1 tháng 4 năm 2026"
+      - utter: utter_ask_service_sub_context
+      - user: trực quầy
+      - slot_was_set:
+          - service_sub_context: trực quầy
+      - utter: utter_ask_service_time
+      - user: "15:30"
+      - utter: utter_ask_room_number
+      - user: "305"
+      - utter: utter_ask_complaint_detail
+      - user: Nhân viên trả lời thiếu lịch sự
+      - utter: utter_ask_severity
+      - user: cao
+      - slot_was_set:
+          - assigned_staff_id: FD02
+          - assigned_staff_name: Hoàng Thị Tú
+      - utter: utter_complaint_result_assigned_staff

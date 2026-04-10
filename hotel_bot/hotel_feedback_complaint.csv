@@ -32,3 +32,8 @@ F030,2026-04-07T22:45:00,S030,U502,complaint,maintenance,,Mất điện cục b�
 F031,2026-04-08T00:15:54,S20260408001554,Yp70IjXSMhpE5E5gAAAD,complaint,bell_boy,,1 nhân viên bê đồ làm thiết bị của tôi bị hỏng,high,in_progress,,
 F032,2026-04-08T00:37:43,S20260408003743,IvqFKIxqDBPZ2Ji8AAAF,complaint,front_desk,,thái độ nhân viên trực quầy ko tốt,high,in_progress,FD02,
 F033,2026-04-08T17:43:27,S20260408174327,ZQ6dyC-jSuQ7IfHkAAAB,complaint,front_desk,,nhân viên trực quầy có thái độ rất tệ,high,in_progress,,
+F034,2026-04-08T18:58:53,S20260408185853,YkuKRxt60UfXqNVoAAAB,complaint,front_desk,,nhân viên trực quầy có thái độ tệ với khách,high,in_progress,FD02,
+F035,2026-04-10T15:49:53,S20260410154953,complaint fallback when no staff assignment found_2026-04-10 15:41:53.620860,complaint,housekeeping,,Không ai đến hỗ trợ dù tôi đã chờ lâu,high,in_progress,,
+F036,2026-04-10T16:42:05,S20260410164205,complaint fallback when no staff assignment found_2026-04-10 16:33:42.438902,complaint,housekeeping,,Không ai đến hỗ trợ dù tôi đã chờ lâu,high,in_progress,,
+F037,2026-04-10T16:56:00,S20260410165600,complaint in-room housekeeping with high severity_2026-04-10 16:48:06.199475,complaint,housekeeping,,Nhân viên gõ cửa và nói chuyện khá to khi tôi đang nghỉ,high,in_progress,HK02,
+F038,2026-04-10T17:14:35,S20260410171435,complaint non-in-room front desk with medium synonym_2026-04-10 17:06:33.889852,complaint,front_desk,,Nhân viên trả lời thiếu lịch sự,high,in_progress,FD02,

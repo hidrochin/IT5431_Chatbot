@@ -1,0 +1,28 @@
+test_cases:
+  - test_case: feedback non-in-room front desk with full fields
+    steps:
+      - user: Tôi muốn gửi feedback cho lễ tân
+      - slot_was_set:
+          - request_type: feedback
+      - utter: utter_ask_service_code
+      - user: front desk
+      - slot_was_set:
+          - service_code: front_desk
+      - utter: utter_ask_service_date
+      - user: "ngày 1 tháng 4 năm 2026"
+      - utter: utter_ask_service_sub_context
+      - user: check-in
+      - slot_was_set:
+          - service_sub_context: check-in
+      - utter: utter_ask_service_time
+      - user: "16:00"
+      - utter: utter_ask_room_number
+      - user: "502"
+      - utter: utter_ask_feedback_rating
+      - user: "4"
+      - utter: utter_ask_feedback_note
+      - user: Thủ tục nhanh và rõ ràng
+      - slot_was_set:
+          - assigned_staff_id: FD02
+          - assigned_staff_name: Hoàng Thị Tú
+      - utter: utter_feedback_result_success

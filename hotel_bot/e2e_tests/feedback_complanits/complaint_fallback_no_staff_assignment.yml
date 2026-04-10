@@ -1,0 +1,29 @@
+test_cases:
+  - test_case: complaint fallback when no staff assignment found
+    steps:
+      - user: Tôi muốn khiếu nại về dọn phòng
+      - slot_was_set:
+          - request_type: complaint
+      - utter: utter_complaint_apology
+      - utter: utter_ask_service_code
+      - user: housekeeping
+      - slot_was_set:
+          - service_code: housekeeping
+      - utter: utter_ask_service_date
+      - user: "ngày 2 tháng 4 năm 2026"
+      - utter: utter_ask_service_sub_context
+      - user: dọn phòng buổi chiều
+      - slot_was_set:
+          - service_sub_context: dọn phòng
+      - utter: utter_ask_service_time
+      - user: "18:00"
+      - utter: utter_ask_room_number
+      - user: "202"
+      - utter: utter_ask_complaint_detail
+      - user: Không ai đến hỗ trợ dù tôi đã chờ lâu
+      - utter: utter_ask_severity
+      - user: cao
+      - slot_was_set:
+          - assigned_staff_id: null
+          - assigned_staff_name: null
+      - utter: utter_complaint_result_no_staff

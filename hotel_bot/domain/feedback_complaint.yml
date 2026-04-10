@@ -4,6 +4,7 @@ actions:
   - action_classify_feedback_complaint
   - action_validate_request_type
   - action_validate_service_code
+  - action_validate_service_date
   - action_validate_service_sub_context
   - action_validate_severity
   - action_lookup_staff_feedback
@@ -87,3 +88,9 @@ responses:
     - text: "Vấn đề cụ thể là gì?"
   utter_ask_severity:
     - text: "Mức độ ảnh hưởng với bạn như thế nào? (thấp/low, vừa phải/medium, hoặc cao/nặng/high)"
+  utter_feedback_result_success:
+    - text: "Cảm ơn bạn đã gửi phản hồi. Mình đã ghi nhận thông tin thành công."
+  utter_complaint_result_no_staff:
+    - text: "Mình đã ghi nhận phản ánh về {service_name} vào ngày {service_date_text}. Hiện mình chưa đối chiếu được nhân viên phụ trách cho phòng {room_number}. Bên mình sẽ chuyển quản lý ca kiểm tra và xử lý ngay."
+  utter_complaint_result_assigned_staff:
+    - text: "Mình đã ghi nhận phản ánh về {service_name} vào ngày {service_date_text}. Hiện tại {staff_name} đang phụ trách và sẽ xử lý ngay cho bạn."

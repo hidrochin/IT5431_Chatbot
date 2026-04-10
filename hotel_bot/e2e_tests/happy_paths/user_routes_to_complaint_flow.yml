@@ -1,6 +1,0 @@
-test_cases:
-  - test_case: user routes to complaint flow from first turn
-    steps:
-      - user: Tôi muốn phàn nàn về dịch vụ lễ tân
-      - slot_was_set:
-          - request_type: complaint

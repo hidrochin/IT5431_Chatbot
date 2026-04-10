@@ -1,5 +1,5 @@
 test_cases:
-  - test_case: user submits service complaint
+  - test_case: complaint in-room housekeeping with high severity
     steps:
       - user: Tôi muốn phàn nàn về dọn phòng
       - slot_was_set:
@@ -10,27 +10,20 @@ test_cases:
       - slot_was_set:
           - service_code: housekeeping
       - utter: utter_ask_service_date
-      - user: 4/1/2026
-      - slot_was_set:
-          - service_date: "4/1/2026"
+      - user: "ngày 1 tháng 4 năm 2026"
       - utter: utter_ask_service_sub_context
       - user: bổ sung khăn
       - slot_was_set:
           - service_sub_context: bổ sung khăn
       - utter: utter_ask_service_time
-      - user: 15:00
-      - slot_was_set:
-          - service_time: "15:00"
+      - user: "15:00"
       - utter: utter_ask_room_number
-      - user: 202
-      - slot_was_set:
-          - room_number: "202"
+      - user: "202"
       - utter: utter_ask_complaint_detail
-      - user: Dọn phòng ồn ào lúc tôi đang ngủ
-      - slot_was_set:
-          - complaint_detail: Dọn phòng ồn ào lúc tôi đang ngủ
+      - user: Nhân viên gõ cửa và nói chuyện khá to khi tôi đang nghỉ
       - utter: utter_ask_severity
       - user: high
       - slot_was_set:
-          - severity: high
-      - utter: Mình đã ghi nhận phản ánh về Dọn phòng vào ngày 01/04/2026. Hiện tại Trần Thị Lan đang phụ trách và sẽ xử lý ngay cho bạn.
+          - assigned_staff_id: HK02
+          - assigned_staff_name: Trần Thị Lan
+      - utter: utter_complaint_result_assigned_staff

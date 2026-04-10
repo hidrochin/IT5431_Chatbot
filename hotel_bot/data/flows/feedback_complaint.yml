@@ -2,8 +2,9 @@ flows:
   handle_feedback_or_complaint:
     description: "Dùng flow này khi khách muốn phản hồi, góp ý, phàn nàn, khiếu nại, báo lỗi dịch vụ khách sạn; phân loại feedback/complaint và xử lý theo dữ liệu CSV. Ở lượt đầu chỉ được xác định request_type, không set các slot khác (service_code, service_sub_context, service_time, room_number, complaint_detail, severity, feedback_rating, feedback_note) trước khi flow hỏi theo thứ tự."
     steps:
+      - action: action_classify_feedback_complaint
       - collect: request_type
-        description: "[LLM ONLY] Analyze user message and classify as 'feedback' (praise/positive comment) or 'complaint' (issue/problem report). If unclear, ask exactly: 'Bạn muốn gửi phản hồi hay báo cáo vấn đề cần xử lý?'. Set slot request_type to EXACTLY one of: feedback, complaint. IMPORTANT: In this step, do NOT set any other slot besides request_type."
+        description: "[LLM ONLY] Analyze user message and classify as 'feedback' (praise/positive comment) or 'complaint' (issue/problem report). PRIORITY: if first user turn contains clear keywords (feedback/phan hoi/gop y/hai long/cam on => feedback; complaint/phan nan/khieu nai/khong hai long/bao loi/su co => complaint), set immediately in this turn. If unclear, ask exactly: 'Bạn muốn gửi phản hồi hay báo cáo vấn đề cần xử lý?'. Set slot request_type to EXACTLY one of: feedback, complaint. IMPORTANT: In this step, do NOT set any other slot besides request_type."
         next:
           - if: slots.request_type == "feedback"
             then:
@@ -12,7 +13,8 @@ flows:
                 description: "[LLM ONLY] EXTRACT service_code from user input. DIRECT MAPPING (use immediately when user says): 'lễ tân'/'le tan'/'front desk'/'trực quầy'/'trực ban' => SET service_code='front_desk' | 'dọn phòng'/'don phong' => SET service_code='housekeeping' | 'phục vụ phòng'/'room service' => SET service_code='room_service' | 'nhà hàng'/'nha hang'/'buffet' => SET service_code='restaurant' | 'giặt ủi'/'giat ui' => SET service_code='laundry' | 'kỹ thuật'/'ky thuat'/'sửa chữa' => SET service_code='maintenance' | 'spa'/'massage' => SET service_code='spa_massage' | 'hành lý'/'hanh ly'/'vali' => SET service_code='bell_boy'. OUTPUT MUST BE ONE OF: front_desk, housekeeping, room_service, restaurant, laundry, maintenance, spa_massage, bell_boy."
               # - action: action_validate_service_code
               - collect: service_date
-                description: "Ask service usage date: 'Bạn sử dụng dịch vụ này vào ngày nào?'. If user says 'hôm nay' or does not specify, set service_date to current date."
+                description: "Ask service usage date: 'Bạn sử dụng dịch vụ này vào ngày nào?'. ACCEPT and set slot immediately for clear date formats like 'ngày 1 tháng 4 năm 2026', '1/4/2026', '2026-04-01', or 'hôm nay'. Do not rephrase when user already provides a valid date. If user says 'hôm nay' or does not specify, set service_date to current date."
+              - action: action_validate_service_date
                 next:
                   - if: slots.service_code == "housekeeping" or slots.service_code == "room_service" or slots.service_code == "maintenance"
                     then:
@@ -54,7 +56,8 @@ flows:
                 description: "[LLM ONLY] EXTRACT service_code from user input. DIRECT MAPPING (use immediately when user says): 'lễ tân'/'le tan'/'front desk'/'trực quầy'/'trực ban' => SET service_code='front_desk' | 'dọn phòng'/'don phong' => SET service_code='housekeeping' | 'phục vụ phòng'/'room service' => SET service_code='room_service' | 'nhà hàng'/'nha hang'/'buffet' => SET service_code='restaurant' | 'giặt ủi'/'giat ui' => SET service_code='laundry' | 'kỹ thuật'/'ky thuat'/'sửa chữa' => SET service_code='maintenance' | 'spa'/'massage' => SET service_code='spa_massage' | 'hành lý'/'hanh ly'/'vali' => SET service_code='bell_boy'. OUTPUT MUST BE ONE OF: front_desk, housekeeping, room_service, restaurant, laundry, maintenance, spa_massage, bell_boy."
               # - action: action_validate_service_code
               - collect: service_date
-                description: "Ask service usage date: 'Bạn sử dụng dịch vụ này vào ngày nào?'. If user says 'hôm nay' or does not specify, set service_date to current date."
+                description: "Ask service usage date: 'Bạn sử dụng dịch vụ này vào ngày nào?'. ACCEPT and set slot immediately for clear date formats like 'ngày 1 tháng 4 năm 2026', '1/4/2026', '2026-04-01', or 'hôm nay'. Do not rephrase when user already provides a valid date. If user says 'hôm nay' or does not specify, set service_date to current date."
+              - action: action_validate_service_date
                 next:
                   - if: slots.service_code == "housekeeping" or slots.service_code == "room_service" or slots.service_code == "maintenance"
                     then:

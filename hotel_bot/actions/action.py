@@ -227,6 +227,29 @@ def _canonicalize_severity(severity: str) -> Optional[str]:
     return None
 
 
+def _classify_request_type_from_text(text: str) -> Optional[str]:
+    normalized_text = _normalize_text(text)
+    if not normalized_text:
+        return None
+
+    complaint_keywords = {
+        "complaint", "problem", "issue", "bad", "not good", "terrible",
+        "phan nan", "khieu nai", "loi", "su co", "khong hai long", "bao loi", "van de",
+        "toi muon phan nan", "toi muon khieu nai", "khong chap nhan"
+    }
+    feedback_keywords = {
+        "feedback", "praise", "good", "great", "excellent", "thank",
+        "phan hoi", "gop y", "khen", "hai long", "cam on", "danh gia", "tot"
+    }
+
+    if any(keyword in normalized_text for keyword in complaint_keywords):
+        return "complaint"
+    if any(keyword in normalized_text for keyword in feedback_keywords):
+        return "feedback"
+
+    return None
+
+
 def _parse_rating_1_to_5(rating: str) -> Optional[int]:
     raw = str(rating or "").strip()
     if not raw:
@@ -652,11 +675,16 @@ class ActionValidateRequestType(Action):
         domain: Dict[Text, Any]
     ) -> List[Dict[Text, Any]]:
         request_type = _normalize_text(tracker.get_slot("request_type"))
+        latest_text = _latest_user_text(tracker)
 
         if request_type in {"feedback", "phan hoi", "gop y"}:
             return [SlotSet("request_type", "feedback")]
         if request_type in {"complaint", "phan nan", "khieu nai", "bao cao van de"}:
             return [SlotSet("request_type", "complaint")]
+
+        inferred_type = _classify_request_type_from_text(latest_text)
+        if inferred_type:
+            return [SlotSet("request_type", inferred_type)]
 
         dispatcher.utter_message(text="Bạn muốn gửi phản hồi hay báo cáo vấn đề cần xử lý?")
         return [SlotSet("request_type", None), FollowupAction("action_listen")]
@@ -677,22 +705,10 @@ class ActionClassifyFeedbackComplaint(Action):
         if existing_request_type in {"feedback", "complaint"}:
             return [SlotSet("request_type", existing_request_type)]
 
-        latest_text = _normalize_text(_latest_user_text(tracker))
-
-        complaint_keywords = {
-            "complaint", "problem", "issue", "bad", "not good", "terrible",
-            "phan nan", "khieu nai", "loi", "su co", "khong hai long"
-        }
-        feedback_keywords = {
-            "feedback", "praise", "good", "great", "excellent", "thank",
-            "phan hoi", "gop y", "khen", "hai long", "cam on"
-        }
-
-        if any(keyword in latest_text for keyword in complaint_keywords):
-            return [SlotSet("request_type", "complaint")]
-
-        if any(keyword in latest_text for keyword in feedback_keywords):
-            return [SlotSet("request_type", "feedback")]
+        latest_text = _latest_user_text(tracker)
+        inferred_type = _classify_request_type_from_text(latest_text)
+        if inferred_type:
+            return [SlotSet("request_type", inferred_type)]
 
         dispatcher.utter_message(text="Bạn muốn gửi phản hồi hay báo cáo vấn đề cần xử lý?")
         return [SlotSet("request_type", None), FollowupAction("action_listen")]
@@ -790,6 +806,43 @@ class ActionValidateSeverity(Action):
         # If still can't determine, ask user again
         dispatcher.utter_message(text="Mức độ ảnh hưởng với bạn như thế nào? Vui lòng chọn: thấp (low), vừa phải (medium), hoặc cao/nặng (high)")
         return [SlotSet("severity", None), FollowupAction("action_listen")]
+
+
+class ActionValidateServiceDate(Action):
+    """Validate and normalize service_date from user input."""
+
+    def name(self) -> Text:
+        return "action_validate_service_date"
+
+    def run(
+        self,
+        dispatcher: CollectingDispatcher,
+        tracker: Tracker,
+        domain: Dict[Text, Any]
+    ) -> List[Dict[Text, Any]]:
+        service_date_slot = tracker.get_slot("service_date")
+        latest_text = _latest_user_text(tracker)
+
+        # Prefer the collected slot, then fallback to latest user text.
+        raw_value = service_date_slot if service_date_slot else latest_text
+        if not str(raw_value or "").strip():
+            dispatcher.utter_message(text="Bạn sử dụng dịch vụ này vào ngày nào?")
+            return [SlotSet("service_date", None), FollowupAction("action_listen")]
+
+        direct = _parse_date_to_date(str(raw_value))
+        parsed = dateparser.parse(str(raw_value)) if not direct else None
+        normalized = direct or (parsed.date() if parsed else None)
+
+        if not normalized:
+            normalized_text = _normalize_text(raw_value)
+            if normalized_text in {"hom nay", "hôm nay", "today", "nay"}:
+                normalized = datetime.now().date()
+
+        if not normalized:
+            dispatcher.utter_message(text="Mình chưa rõ ngày sử dụng dịch vụ. Bạn cho mình ngày cụ thể (ví dụ: 01/04/2026) nhé.")
+            return [SlotSet("service_date", None), FollowupAction("action_listen")]
+
+        return [SlotSet("service_date", normalized.isoformat())]
 
 
 class ActionValidateServiceSubContext(Action):
@@ -939,7 +992,7 @@ class ActionSaveFeedbackRecord(Action):
         }
 
         _write_feedback_or_complaint_row(record)
-        dispatcher.utter_message(text="Cảm ơn bạn đã gửi phản hồi. Mình đã ghi nhận thông tin thành công.")
+        dispatcher.utter_message(response="utter_feedback_result_success")
         return [SlotSet("service_code", service_code), SlotSet("feedback_rating", str(feedback_rating))]
 
 
@@ -1017,18 +1070,17 @@ class ActionConfirmComplaintAssignment(Action):
 
         if not staff_name_raw:
             dispatcher.utter_message(
-                text=(
-                    f"Mình đã ghi nhận phản ánh về {service_name} vào ngày {service_date_text}. "
-                    f"Hiện mình chưa đối chiếu được nhân viên phụ trách cho phòng {room_number}. "
-                    "Bên mình sẽ chuyển quản lý ca kiểm tra và xử lý ngay."
-                )
+                response="utter_complaint_result_no_staff",
+                service_name=service_name,
+                service_date_text=service_date_text,
+                room_number=room_number,
             )
             return []
 
         dispatcher.utter_message(
-            text=(
-                f"Mình đã ghi nhận phản ánh về {service_name} vào ngày {service_date_text}. "
-                f"Hiện tại {staff_name_raw} đang phụ trách và sẽ xử lý ngay cho bạn."
-            )
+            response="utter_complaint_result_assigned_staff",
+            service_name=service_name,
+            service_date_text=service_date_text,
+            staff_name=staff_name_raw,
         )
         return []
