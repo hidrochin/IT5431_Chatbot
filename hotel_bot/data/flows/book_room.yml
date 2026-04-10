@@ -62,6 +62,7 @@ flows:
         next:
           - if: slots.confirm_booking
             then:
+              - action: action_finalize_booking
               - action: utter_booking_confirmed
                 next: END
           - else:

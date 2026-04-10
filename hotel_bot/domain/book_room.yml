@@ -5,6 +5,8 @@ actions:
   - action_check_availability
   - action_wipe_target_slot
   - action_process_cancellation_db
+  - action_finalize_booking
+  - action_trigger_search
 
 slots:
   guest_name:

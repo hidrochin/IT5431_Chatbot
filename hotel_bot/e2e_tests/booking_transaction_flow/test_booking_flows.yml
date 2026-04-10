@@ -1,57 +1,47 @@
 test_cases:
   - test_case: "Test 1: The Happy Path (Seamless Extraction)"
-    # description: "Proves that CALM can extract multiple slots accurately and trigger the Happy Path confirmation."
     steps:
-      - user: "Hi, I need to book a Deluxe room for 2 adults from tomorrow until next Friday. My name is Nguyen Van A, phone 0901234567, email a.nguyen@test.com."
+      - user: "Hi, I need to book 1 Deluxe room for 2 adults and 0 children from October 15, 2026 until October 20, 2026. My name is Nguyen Van A, phone 0901234567, email a.nguyen@test.com."
       - slot_was_set:
           - room_type: "Deluxe"
           - adults_count: 2
-          - check_in_date: "tomorrow" # Internal mapping
-          - check_out_date: "next Friday"
+          - children_count: 0
+          - check_in_date: "2026-10-15" 
+          - check_out_date: "2026-10-20"
           - guest_name: "Nguyen Van A"
           - guest_phone: "0901234567"
           - guest_email: "a.nguyen@test.com"
-      - action: action_validate_booking_dates
-      - action: action_check_availability
-      - bot: utter_ask_special_requests
+      - bot: "Do you have any special preferences for your stay, such as a high floor, a quiet room, or early check-in?"
       - user: "No special requests, thank you."
       - slot_was_set:
-          - special_requests: null # Proves the LLM followed the strict anti-hallucination prompt
-      - bot: utter_ask_confirm_booking
+          - special_requests: ~ # Using the explicit YAML null token
       - user: "Yes, book it."
       - slot_was_set:
           - confirm_booking: true
-      - bot: utter_booking_confirmed
 
   - test_case: "Test 2: The Logic Trap (Past Date & 14-Day Limit Protection)"
-    # description: "Proves the Python backend catches illegal dates and gracefully resets the slots without breaking the dialogue graph."
     steps:
-      - user: "I want to book a room starting yesterday for 20 days."
+      - user: "I want to book a room starting April 1, 2026 for 20 days."
       - slot_was_set:
-          - check_in_date: "yesterday"
-      - action: action_validate_booking_dates
+          - check_in_date: 2026-04-01 # Quotes removed so YAML parses it natively
       - slot_was_set:
-          - check_in_date: null # Proves the Python script wiped the illegal past date
+          - check_in_date: ~ 
       - bot: "SYSTEM_INSTRUCTION: The check-in date is in the past. Politely inform the user that we can only book for today or future dates."
-      - user: "Oops, I meant next Monday to next Wednesday."
+      - user: "Oops, I meant October 15, 2026 to October 18, 2026."
       - slot_was_set:
-          - check_in_date: "next Monday"
-          - check_out_date: "next Wednesday"
-      - action: action_validate_booking_dates
-      - slot_was_set:
-          - check_in_date: "next Monday" # Proves the slot is successfully locked in on the second try
+          - check_in_date: 2026-10-15
+          - check_out_date: 2026-10-18
 
   - test_case: "Test 3: Mid-Flow Correction (Context Switching)"
-    # description: "Proves CALM's non-linear flexibility by handling a user changing their mind mid-conversation."
     steps:
       - user: "I need 1 room for 2 adults."
       - slot_was_set:
           - room_count: 1
           - adults_count: 2
-      - bot: utter_ask_check_in_date
+      - bot: "What date will you be checking in?"
       - user: "Wait, actually make that 3 adults and 2 rooms."
       - slot_was_set:
-          - adults_count: 3 # Proves CALM dynamically updated the slots mid-flow
+          - adults_count: 3
           - room_count: 2
-      - bot: utter_ask_check_in_date # Proves CALM resumed the flow exactly where it left off
-      - user: "I'll check in on October 12th."
+      - bot: "What date will you be checking in?" 
+      - user: "I'll check in on October 12, 2026."

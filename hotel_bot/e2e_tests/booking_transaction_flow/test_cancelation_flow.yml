@@ -1,20 +1,17 @@
 test_cases:
   - test_case: "The Reversal Test: User backs out at double confirmation"
-    # description: "Proves the database protection logic holds and the deletion action is not triggered."
     steps:
       - user: "I need to cancel my reservation."
-      - bot: "What is your booking reference number?"
+      - bot: "Could you please provide your alphanumeric booking reference ID?"
       - user: "It's HN5592."
       - slot_was_set:
           - booking_reference: "HN5592"
-      - bot: "Are you sure you want to begin the cancellation process for HN5592?"
+      - bot: "Are you absolutely sure you want to begin the cancellation process for this reservation?"
       - user: "Yes, start the process."
       - slot_was_set:
           - confirm_cancel_intent: true
-      - bot: "Warning: Cancellation is irreversible. Do you want to permanently cancel this booking?"
+      - bot: "Warning: Cancelling a reservation is irreversible. Do you want to permanently delete this booking?"
       - user: "Wait, no, actually keep it."
       - slot_was_set:
           - double_confirm_cancellation: false
-      - action: utter_cancellation_aborted
-      # We intentionally DO NOT assert action_process_cancellation_db here. 
-      # Its absence in the flow proves the database was protected.
+      - bot: "Understood. I have safely aborted the cancellation process. Your reservation remains completely unchanged."

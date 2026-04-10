@@ -6,6 +6,14 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 import dateparser
 import difflib
+import csv
+import os
+import random
+import string
+from langchain_community.vectorstores import FAISS
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.prompts import PromptTemplate
 
 class ActionValidateBookingDates(Action):
     def name(self) -> Text:
@@ -145,5 +153,141 @@ class ActionWipeTargetSlot(Action):
             # Wipe the target slot, AND wipe the 'slot_to_modify' memory 
             # so the flow can be used again later if needed.
             return [SlotSet(slot_to_modify, None), SlotSet("slot_to_modify", None)]
+            
+        return []
+
+class ActionFinalizeBooking(Action):
+    def name(self) -> Text:
+        return "action_finalize_booking"
+
+    def generate_booking_id(self) -> str:
+        """Generates a random 6-character alphanumeric ID (e.g., HN829X)."""
+        chars = string.ascii_uppercase + string.digits
+        return "HN" + ''.join(random.choice(chars) for _ in range(4))
+
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        
+        # 1. Extract all finalized slots
+        booking_id = self.generate_booking_id()
+        guest_name = tracker.get_slot("guest_name")
+        phone = tracker.get_slot("guest_phone")
+        email = tracker.get_slot("guest_email")
+        check_in = tracker.get_slot("check_in_date")
+        check_out = tracker.get_slot("check_out_date")
+        room_type = tracker.get_slot("room_type")
+        adults = tracker.get_slot("adults_count")
+        children = tracker.get_slot("children_count")
+        
+        # Ensure directories exist
+        os.makedirs("db", exist_ok=True)
+        bookings_path = os.path.join("db", "bookings.csv")
+        inventory_path = os.path.join("db", "inventory.csv")
+
+        # 2. Append to bookings.csv
+        file_exists = os.path.isfile(bookings_path)
+        with open(bookings_path, mode='a', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)
+            if not file_exists:
+                # Write header if file is brand new
+                writer.writerow(["Booking ID", "Name", "Phone", "Email", "Check In", "Check Out", "Room Type", "Adults", "Children"])
+            
+            writer.writerow([booking_id, guest_name, phone, email, check_in, check_out, room_type, adults, children])
+
+        # 3. Update inventory.csv (Subtract 1 from Available)
+        updated_inventory = []
+        try:
+            with open(inventory_path, mode='r', encoding='utf-8') as file:
+                reader = csv.DictReader(file)
+                fieldnames = reader.fieldnames
+                for row in reader:
+                    if row["Room Type"] == room_type and int(row["Available"]) > 0:
+                        row["Available"] = str(int(row["Available"]) - 1)
+                    updated_inventory.append(row)
+            
+            # Write the updated inventory back to the file
+            with open(inventory_path, mode='w', newline='', encoding='utf-8') as file:
+                writer = csv.DictWriter(file, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(updated_inventory)
+                
+        except FileNotFoundError:
+            print("ERROR: db/inventory.csv not found. Could not update inventory.")
+
+        # 4. Save the Booking ID to memory so the bot can tell the user
+        return [SlotSet("booking_reference", booking_id)]
+    
+
+# ======================================================================
+# GLOBAL INITIALIZATION (Runs once when the action server starts)
+# ======================================================================
+print("Loading BGE-M3 Embeddings and FAISS index into memory...")
+embeddings = HuggingFaceEmbeddings(
+    model_name="BAAI/bge-m3",
+    model_kwargs={'device': 'cpu'}, 
+    encode_kwargs={'normalize_embeddings': True}
+)
+
+# allow_dangerous_deserialization=True is required by FAISS to load local .pkl files safely
+vector_store = FAISS.load_local(
+    "db/faiss_index", 
+    embeddings, 
+    allow_dangerous_deserialization=True
+)
+
+# Initialize the Gemini model for synthesizing the final answer
+# Ensure your GOOGLE_API_KEY environment variable is still active in this terminal
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.1)
+
+# ======================================================================
+# THE RASA ACTION
+# ======================================================================
+class ActionTriggerSearch(Action):
+    def name(self) -> Text:
+        # Rasa CALM automatically looks for this exact action name
+        return "action_trigger_search"
+
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        
+        # 1. Grab the user's question
+        user_query = tracker.latest_message.get("text")
+        print(f"RAG Search Triggered for Query: {user_query}")
+        
+        # 2. Vector Search: Retrieve the top 3 most relevant policy chunks
+        docs = vector_store.similarity_search(user_query, k=3)
+        context = "\n\n".join([doc.page_content for doc in docs])
+        
+        # 3. Construct the RAG Prompt
+        # This forces the LLM to ground its answer ONLY in the PDF data
+        prompt_template = """
+        You are the professional AI Concierge for Hotel Angela. 
+        Answer the guest's question using ONLY the provided hotel policy context below.
+        
+        CRITICAL RULES:
+        1. If the answer is not contained in the context, politely apologize and state that you do not have that specific information.
+        2. Do not invent, hallucinate, or assume any hotel rules.
+        3. Be warm, concise, and helpful.
+        
+        Context from Hotel Policies:
+        {context}
+        
+        Guest Question: {question}
+        
+        Concierge Answer:
+        """
+        
+        prompt = PromptTemplate(template=prompt_template, input_variables=["context", "question"])
+        chain = prompt | llm
+        
+        # 4. Generate the answer and send it to the user
+        try:
+            response = chain.invoke({"context": context, "question": user_query})
+            dispatcher.utter_message(text=response.content)
+        except Exception as e:
+            dispatcher.utter_message(text="I apologize, but I am having trouble accessing the hotel registry right now. Please try asking again in a moment.")
+            print(f"RAG Pipeline Error: {e}")
             
         return []
