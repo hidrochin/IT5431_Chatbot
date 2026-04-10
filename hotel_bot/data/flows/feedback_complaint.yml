@@ -21,6 +21,7 @@ flows:
                       - collect: service_sub_context
                         ask_before_filling: true
                         description: "[LLM ONLY] BẮT BUỘC trích xuất service_sub_context thành 1 cụm NGẮN theo ngữ nghĩa để đối chiếu notes. ƯU TIÊN MAP TRỰC TIẾP nếu user nói: 'trực quầy'/'trực ban' => 'trực quầy'; 'check in'/'check-in'/'nhận phòng' => 'check-in'; 'check out'/'check-out'/'trả phòng' => 'check-out'; 'giao đồ ăn'; 'sửa điều hòa'; 'bổ sung khăn'. Nếu user trả lời chỉ 1 cụm ngắn hợp lệ (ví dụ: 'trực quầy', 'trực quầy rồi'), PHẢI set slot ngay và KHÔNG hỏi lại. Chỉ hỏi lại khi user thật sự chưa nêu khâu cụ thể, dùng đúng câu: 'Bạn muốn góp ý ở khâu nào của dịch vụ này?'. OUTPUT CHỈ được phép set slot service_sub_context hoặc ask câu trên. KHÔNG thêm văn bản tự do như 'provide info'."
+                      - action: action_validate_service_sub_context
                       - collect: service_time
                         description: "[LLM ONLY] Ask service time: 'Sự việc diễn ra lúc mấy giờ?'. Accept HH:MM or natural input like '6h sáng', '14:30'. Set slot service_time from user answer."
                       - collect: room_number
@@ -31,12 +32,12 @@ flows:
                         description: "Ask optional comment: 'Bạn có lời góp ý thêm không?' (Can be empty/omitted if not provided)"
                       - action: action_lookup_staff_feedback
                       - action: action_save_feedback_record
-                      - action: utter_feedback_result_success
                         next: END
                   - else:
                       - collect: service_sub_context
                         ask_before_filling: true
                         description: "[LLM ONLY] BẮT BUỘC trích xuất service_sub_context thành 1 cụm NGẮN theo ngữ nghĩa để đối chiếu notes. ƯU TIÊN MAP TRỰC TIẾP nếu user nói: 'trực quầy'/'trực ban' => 'trực quầy'; 'check in'/'check-in'/'nhận phòng' => 'check-in'; 'check out'/'check-out'/'trả phòng' => 'check-out'. Nếu user trả lời chỉ 1 cụm ngắn hợp lệ (ví dụ: 'trực quầy', 'trực quầy rồi'), PHẢI set slot ngay và KHÔNG hỏi lại. Chỉ hỏi lại khi user thật sự chưa nêu khâu cụ thể, dùng đúng câu: 'Bạn muốn góp ý ở khâu nào của dịch vụ này?'. OUTPUT CHỈ được phép set slot service_sub_context hoặc ask câu trên. KHÔNG thêm văn bản tự do như 'provide info'."
+                      - action: action_validate_service_sub_context
                       - collect: service_time
                         description: "[LLM ONLY] Ask service time: 'Sự việc diễn ra lúc mấy giờ?'. Accept HH:MM or natural input like '6h sáng', '14:30'. Set slot service_time from user answer."
                       - collect: room_number
@@ -47,7 +48,6 @@ flows:
                         description: "Ask optional comment: 'Bạn có lời góp ý thêm không?' (Can be empty/omitted if not provided)"
                       - action: action_lookup_staff_feedback
                       - action: action_save_feedback_record
-                      - action: utter_feedback_result_success
                         next: END
           - else:
               - action: utter_complaint_apology
@@ -64,6 +64,7 @@ flows:
                       - collect: service_sub_context
                         ask_before_filling: true
                         description: "[LLM ONLY] BẮT BUỘC trích xuất service_sub_context thành 1 cụm NGẮN theo ngữ nghĩa để đối chiếu notes. ƯU TIÊN MAP TRỰC TIẾP nếu user nói: 'trực quầy'/'trực ban' => 'trực quầy'; 'check in'/'check-in'/'nhận phòng' => 'check-in'; 'check out'/'check-out'/'trả phòng' => 'check-out'; 'giao đồ ăn'; 'sửa điều hòa'. Nếu user trả lời chỉ 1 cụm ngắn hợp lệ (ví dụ: 'trực quầy', 'trực quầy rồi'), PHẢI set slot ngay và KHÔNG hỏi lại. Chỉ hỏi lại khi user thật sự chưa nêu khâu cụ thể, dùng đúng câu: 'Bạn gặp vấn đề ở khâu nào của dịch vụ này?'. OUTPUT CHỈ được phép set slot service_sub_context hoặc ask câu trên. KHÔNG thêm văn bản tự do như 'provide info'."
+                      - action: action_validate_service_sub_context
                       - collect: service_time
                         description: "[LLM ONLY] Ask service time: 'Sự việc xảy ra lúc mấy giờ?'. Accept HH:MM or natural input like '6h sáng', '14:30'. Set slot service_time from user answer."
                       - collect: room_number
@@ -81,6 +82,7 @@ flows:
                       - collect: service_sub_context
                         ask_before_filling: true
                         description: "[LLM ONLY] BẮT BUỘC trích xuất service_sub_context thành 1 cụm NGẮN theo ngữ nghĩa để đối chiếu notes. ƯU TIÊN MAP TRỰC TIẾP nếu user nói: 'trực quầy'/'trực ban' => 'trực quầy'; 'check in'/'check-in'/'nhận phòng' => 'check-in'; 'check out'/'check-out'/'trả phòng' => 'check-out'. Nếu user trả lời chỉ 1 cụm ngắn hợp lệ (ví dụ: 'trực quầy', 'trực quầy rồi'), PHẢI set slot ngay và KHÔNG hỏi lại. Chỉ hỏi lại khi user thật sự chưa nêu khâu cụ thể, dùng đúng câu: 'Bạn gặp vấn đề ở khâu nào của dịch vụ này?'. OUTPUT CHỈ được phép set slot service_sub_context hoặc ask câu trên. KHÔNG thêm văn bản tự do như 'provide info'."
+                      - action: action_validate_service_sub_context
                       - collect: service_time
                         description: "[LLM ONLY] Ask service time: 'Sự việc xảy ra lúc mấy giờ?'. Accept HH:MM or natural input like '6h sáng', '14:30'. Set slot service_time from user answer."
                       - collect: room_number

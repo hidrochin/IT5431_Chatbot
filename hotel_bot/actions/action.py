@@ -266,12 +266,24 @@ def _classify_request_type_from_text(text: str) -> Optional[str]:
 
 
 def _parse_rating_1_to_5(rating: str) -> Optional[int]:
-    raw = str(rating or "").strip()
+    if rating is None:
+        return None
+
+    raw = str(rating).strip()
     if not raw:
         return None
-    if not raw.isdigit():
+
+    # Accept common forms coming from LLM slot filling: "5", "5.0", 5, 5.0.
+    normalized = raw.replace(",", ".")
+    try:
+        numeric = float(normalized)
+    except ValueError:
         return None
-    value = int(raw)
+
+    if not numeric.is_integer():
+        return None
+
+    value = int(numeric)
     if 1 <= value <= 5:
         return value
     return None
@@ -1007,7 +1019,11 @@ class ActionSaveFeedbackRecord(Action):
         }
 
         _write_feedback_or_complaint_row(record)
-        return [SlotSet("service_code", service_code), SlotSet("feedback_rating", str(feedback_rating))]
+        return [
+            SlotSet("service_code", service_code),
+            SlotSet("feedback_rating", str(feedback_rating)),
+            FollowupAction("utter_feedback_result_success"),
+        ]
 
 
 class ActionSaveComplaintRecord(Action):

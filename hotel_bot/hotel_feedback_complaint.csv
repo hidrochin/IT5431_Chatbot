@@ -37,3 +37,4 @@ F035,2026-04-10T15:49:53,S20260410154953,complaint fallback when no staff assign
 F036,2026-04-10T16:42:05,S20260410164205,complaint fallback when no staff assignment found_2026-04-10 16:33:42.438902,complaint,housekeeping,,Không ai đến hỗ trợ dù tôi đã chờ lâu,high,in_progress,,
 F037,2026-04-10T16:56:00,S20260410165600,complaint in-room housekeeping with high severity_2026-04-10 16:48:06.199475,complaint,housekeeping,,Nhân viên gõ cửa và nói chuyện khá to khi tôi đang nghỉ,high,in_progress,HK02,
 F038,2026-04-10T17:14:35,S20260410171435,complaint non-in-room front desk with medium synonym_2026-04-10 17:06:33.889852,complaint,front_desk,,Nhân viên trả lời thiếu lịch sự,high,in_progress,FD02,
+F039,2026-04-10T21:54:44,S20260410215444,feedback in-room housekeeping with full fields_2026-04-10 21:54:36.392597,feedback,housekeeping,5,Phòng sạch và chuẩn tiếp rất nhanh,,new,HK02,
