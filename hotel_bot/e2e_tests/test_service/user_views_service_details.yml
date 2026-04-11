@@ -1,0 +1,10 @@
+test_cases:
+  - test_case: Khách hàng xem chi tiết dịch vụ
+    steps:
+      - user: Cho tôi xem chi tiết dịch vụ Massage
+      - utter: utter_ask_service_type
+      - user: Massage
+      - slot_was_set:
+          - service_type: "Massage"
+      - action: action_service_detail
+      - utter: utter_service_detail_shown

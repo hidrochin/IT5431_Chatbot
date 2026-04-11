@@ -1,0 +1,37 @@
+test_cases:
+  - test_case: Khách hàng hủy xác nhận đặt dịch vụ
+    steps:
+      - user: Tôi muốn đặt dịch vụ Buffet
+      - utter: utter_ask_user_name
+      - user: Lê Văn C
+      - slot_was_set:
+          - user_name: "Lê Văn C"
+      - utter: utter_ask_phone_number
+      - user: 0901234567
+      - slot_was_set:
+          - phone_number: "0901234567"
+      - utter: utter_ask_service_type_order
+      - user: Buffet
+      - slot_was_set:
+          - service_type_order: "Buffet"
+      - utter: utter_ask_quantity
+      - user: 2 suất
+      - slot_was_set:
+          - quantity: 2.0
+      - utter: utter_ask_date
+      - user: Ngày 12/04/2026
+      - slot_was_set:
+          - date: "2026-04-12"
+      - utter: utter_ask_time
+      - user: Lúc 12:00 trưa
+      - slot_was_set:
+          - time: "12:00"
+      - utter: utter_ask_note
+      - user: Không có ghi chú
+      - slot_was_set:
+          - note: ""
+      - utter: utter_ask_confirm_order
+      - user: Thôi, tôi muốn hủy đơn này
+      - slot_was_set:
+          - confirm_order: false
+      - utter: utter_order_cancelled

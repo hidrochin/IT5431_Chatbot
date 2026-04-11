@@ -1,0 +1,9 @@
+version: "3.1"
+
+flows:
+  list_services:
+    description: "View the list of services provided by the hotel to customers"
+
+    steps:
+      - action: action_list_services
+      

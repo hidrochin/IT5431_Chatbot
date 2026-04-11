@@ -1,0 +1,54 @@
+version: "3.1"
+
+flows:
+  modify_service:
+    description: "Flow to help users modify an existing booked service"
+    steps:
+
+      # ===== 1. VERIFICATION =====
+      - collect: user_name_modify
+        description: "Customer name"
+
+      - collect: phone_number_modify
+        description: "Phone number"
+
+      - collect: service_type_modify
+        description: "Name of the service to modify"
+
+      # ===== 2. CHECK BOOKING =====
+      - action: action_check_booking_exist
+        next:
+          - if: slots.booking_found
+            then:
+
+              # ===== 3. ASK FOR MODIFICATION INFORMATION =====
+              - collect: quantity_modify
+                description: "New quantity (or 'no')"
+
+              - collect: date_modify
+                description: "New date (or 'no')"
+
+              - collect: time_modify
+                description: "New time (or 'no')"
+
+              - collect: note_modify
+                description: "New note (can be skipped)"
+
+              # ===== 4. CONFIRMATION =====
+              - action: utter_confirm_modify
+
+              - collect: confirm_modify
+                description: "Confirm yes/no"
+                next:
+                  - if: slots.confirm_modify
+                    then:
+                      - action: action_modify_service
+                        next: END
+                  - else:
+                      - action: utter_cancel_modify
+                        next: END
+
+          # ===== 5. NOT FOUND =====
+          - else:
+              - action: utter_booking_not_found
+                next: END
