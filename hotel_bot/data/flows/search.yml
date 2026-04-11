@@ -1,0 +1,5 @@
+flows:
+  pattern_search:
+    description: "Hijacks the default search command and routes it to our custom LangChain RAG pipeline."
+    steps:
+      - action: action_trigger_search

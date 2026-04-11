@@ -11,7 +11,8 @@ import os
 import random
 import string
 from langchain_community.vectorstores import FAISS
-from langchain_huggingface import HuggingFaceEmbeddings
+# from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import PromptTemplate
 
@@ -262,21 +263,25 @@ class ActionTriggerSearch(Action):
         
         # 3. Construct the RAG Prompt
         # This forces the LLM to ground its answer ONLY in the PDF data
+        # 3. Construct the RAG Prompt
         prompt_template = """
-        You are the professional AI Concierge for Hotel Angela. 
-        Answer the guest's question using ONLY the provided hotel policy context below.
+        You are a warm, highly professional, and empathetic human concierge at Hotel Angela in Hanoi. 
+        A guest is asking you a question mid-conversation.
         
-        CRITICAL RULES:
-        1. If the answer is not contained in the context, politely apologize and state that you do not have that specific information.
-        2. Do not invent, hallucinate, or assume any hotel rules.
-        3. Be warm, concise, and helpful.
+        Your job is to answer their question using ONLY the provided hotel policy context below.
+        
+        CRITICAL RULES FOR YOUR TONE:
+        1. TRANSLATE LEGALESE: Do not repeat formal legal jargon, law numbers, or robotic phrasing from the PDF. Translate the rules into natural, polite, and friendly hospitality language.
+        2. BE EMPATHETIC: If the answer is "no" (like no pets allowed), deliver the news gently and politely.
+        3. BE CONCISE: Keep the answer to 1 or 2 short sentences. Do not over-explain.
+        4. STAY GROUNDED: If the answer is not in the context, apologize and say you need to check with the front desk. Do not make up rules.
         
         Context from Hotel Policies:
         {context}
         
         Guest Question: {question}
         
-        Concierge Answer:
+        Friendly Concierge Answer:
         """
         
         prompt = PromptTemplate(template=prompt_template, input_variables=["context", "question"])

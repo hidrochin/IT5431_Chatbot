@@ -11,7 +11,8 @@
 # https://rasa.com/docs/rasa-pro/concepts/custom-actions
 
 action_endpoint:
-  actions_module: "actions"
+  # actions_module: "actions"
+  url: "http://localhost:5055/webhook"
 
 # Tracker store which is used to store the conversations.
 # By default the conversations are stored in memory.
@@ -54,11 +55,11 @@ model_groups:
     models:
       - provider: gemini
         model: gemini-2.5-flash
-        api_key: "${GEMINI_API_KEY}"
+        api_key: "${GOOGLE_API_KEY}"
 
   - id: huggingface_llm
     models:
       - provider: gemini
         model: gemini-embedding-001
-        api_key: "${GEMINI_API_KEY}"
+        api_key: "${GOOGLE_API_KEY}"
 
