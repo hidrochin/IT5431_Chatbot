@@ -1,0 +1,29 @@
+test_cases:
+  - test_case: Khách hàng hủy việc sửa đơn dịch vụ
+    steps:
+      - user: Tôi muốn sửa lại đơn đặt dịch vụ Massage của mình
+      - utter: utter_ask_user_name_modify
+      - user:  Nguyễn Văn A
+      - slot_was_set:
+          - user_name_modify: "Nguyễn Văn A"
+      - utter: utter_ask_phone_number_modify
+      - user: 0912345678
+      - slot_was_set:
+          - phone_number_modify: "0912345678"
+      - utter: utter_ask_service_type_modify
+      - user: Massage
+      - slot_was_set:
+          - service_type_modify: "Massage"
+      - utter: utter_ask_quantity_modify
+      - user: Tôi muốn tăng lên 3 suất
+      - slot_was_set:
+          - quantity_modify: 3.0
+      - utter: utter_ask_time_modify
+      - user: Đổi giờ sang 17:00
+      - slot_was_set:
+          - time_modify: "17:00"
+      - utter: utter_ask_confirm_modify
+      - user: Thôi, tôi hủy mọi thay đổi
+      - slot_was_set:
+          - confirm_modify: false
+      - utter: utter_modify_cancelled

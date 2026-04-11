@@ -1,0 +1,30 @@
+test_cases:
+  - test_case: Khách hàng sửa đơn đặt dịch vụ thành công
+    steps:
+      - user: Tôi muốn sửa lại đơn đặt dịch vụ của mình
+      - utter: utter_ask_user_name_modify
+      - user: Trần Thị B
+      - slot_was_set:
+          - user_name_modify: "Trần Thị B"
+      - utter: utter_ask_phone_number_modify
+      - user: 0987654321
+      - slot_was_set:
+          - phone_number_modify: "0987654321"
+      - utter: utter_ask_service_type_modify
+      - user: Massage
+      - slot_was_set:
+          - service_type_modify: "Massage"
+      - utter: utter_ask_quantity_modify
+      - user: Tôi muốn đổi thành 2 suất
+      - slot_was_set:
+          - quantity_modify: 2.0
+      - utter: utter_ask_time_modify
+      - user: Đổi giờ sang 16:00
+      - slot_was_set:
+          - time_modify: "16:00"
+      - utter: utter_ask_confirm_modify
+      - user: Vâng, xác nhận thay đổi
+      - slot_was_set:
+          - confirm_modify: true
+      - action: action_modify_service
+      - utter: utter_service_modified

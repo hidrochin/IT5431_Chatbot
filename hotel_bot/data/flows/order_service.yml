@@ -1,0 +1,36 @@
+version: "3.1"
+
+flows:
+  order_service_flow:
+    description: "Flow for booking hotel or spa services, including quantity, time, notes, and contact information."
+    steps:
+      # Collect service information
+      - collect: service_type_order
+        description: "Name of the service to book."
+      - collect: quantity
+        description: "Number of slots/services."
+      - collect: date
+        description: "Date to use the service."
+      - collect: time
+        description: "Time to use the service."
+      - collect: note
+        description: "Additional notes (e.g., room number, special requests)."
+
+      # Collect customer information
+      - collect: user_name
+        description: "Customer name to confirm the booking."
+      - collect: phone_number
+        description: "Contact phone number."
+
+      # Confirm booking
+      - action: utter_confirm_order
+      - collect: confirm_order
+        description: "User confirms whether the booking is correct."
+        next:
+          - if: slots.confirm_order 
+            then:
+              - action: action_create_order
+                next: END
+          - else:
+              - action: utter_cancel_order
+                next: END

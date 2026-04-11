@@ -1,0 +1,6 @@
+test_cases:
+  - test_case: Khách hàng xem danh sách dịch vụ
+    steps:
+      - user: Khách sạn có những dịch vụ nào vậy?
+      - action: action_list_services
+      - utter: utter_services_listed
