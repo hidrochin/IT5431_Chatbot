@@ -166,6 +166,9 @@ class ActionFinalizeBooking(Action):
         chars = string.ascii_uppercase + string.digits
         return "HN" + ''.join(random.choice(chars) for _ in range(4))
 
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         
         # 1. Extract all finalized slots
         booking_id = self.generate_booking_id()
