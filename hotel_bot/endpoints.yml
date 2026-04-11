@@ -52,13 +52,14 @@ action_endpoint:
 model_groups:
   - id: gemini_llm
     models:
-      - provider: gemini
-        model: gemini-2.5-flash
-        api_key: "${GEMINI_API_KEY}"
+      - provider: openai
+        model: gpt-4o-mini
+        api_key: "${OPENAI_API_KEY}"
 
   - id: huggingface_llm
     models:
-      - provider: gemini
-        model: gemini-embedding-001
-        api_key: "${GEMINI_API_KEY}"
+      - provider: openai
+        model: text-embedding-3-small
+        api_key: "${OPENAI_API_KEY}"
+
 

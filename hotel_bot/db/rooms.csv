@@ -1,0 +1,4 @@
+room_type,price_usd_per_night,size_sqm,max_adults,max_children,view,highlights
+Deluxe,150,35,2,1,City view,"King bed, AC, minibar, in-room safe, 55-inch flat TV, rainfall shower, bathtub"
+Junior Suite,250,55,2,2,Pool view,"King bed, AC, minibar, in-room safe, 65-inch flat TV, bathtub, separate living area, private balcony"
+Club Suite,400,85,2,2,Panoramic Hanoi view,"King bed, AC, minibar, in-room safe, 75-inch flat TV, Jacuzzi, separate living and dining area, private balcony, complimentary club lounge access, dedicated butler service"
