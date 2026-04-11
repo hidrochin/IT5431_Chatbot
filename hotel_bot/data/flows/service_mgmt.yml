@@ -1,0 +1,42 @@
+version: "3.1"
+
+flows:
+
+  #  UC5: View Booking
+  view_booking_details:
+    description: "User wants to view a service booking"
+    steps:
+      - collect: booking_service_id
+      - action: action_view_service_booking
+
+
+  #  UC6: Cancel Booking
+  cancel_service_order:
+    description: "User wants to cancel a booking"
+    steps:
+      - collect: booking_service_id
+      - action: action_handle_cancellation
+        next:
+          - if: "not slots.is_cancellable"
+            then:
+              - action: utter_cancel_denied_policy
+                next: END
+          - else:
+              - collect: confirm_cancellation
+                utter: utter_ask_confirm_cancellation
+              - action: action_confirm_cancellation
+                next: END
+
+  inquiry_promotions:
+    description: "User asks for promotions"
+    steps:
+      - collect: service_category
+        utter: utter_ask_service_category
+        next:
+          - if: "not slots.service_category or slots.service_category == 'all'"
+            then:
+              - action: action_show_promotions
+                next: END
+          - else:
+              - action: action_show_promotions
+                next: END

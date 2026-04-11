@@ -1,0 +1,7 @@
+promotion_name,service_category,service_type,discount_percent,start_date,end_date 
+Spa Summer Sale,Spa,Massage,10,2026-06-01,2026-06-30 
+Spa Hot Stone Deal,Spa,Hot Stone,15,2026-06-01,2026-06-30 
+Food Buffet Special,Food,Buffet,20,2026-04-01,2026-04-15 
+Food A la carte Offer,Food,A la carte,10,2026-04-01,2026-04-15 
+Laundry Express Promo,Laundry,Express,5,2026-04-01,2026-04-30 
+Laundry Standard Deal,Laundry,Standard,0,2026-01-01,2026-12-31 

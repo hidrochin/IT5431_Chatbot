@@ -10,3 +10,4 @@
 models/
 .rasa_visualization/
 *.log
+endpoints.yml

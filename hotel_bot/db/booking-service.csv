@@ -1,0 +1,5 @@
+booking_service_id,user_name,phone_number,service_category,service_type,service_time,quantity,total_price
+1,Nguyễn Văn A,912345678,Spa,Massage,2026-04-07 10:00,1,400000
+3,Lê Văn C,901234567,Laundry,Express,2026-04-07 09:00,3,360000
+4,Đào Văn Test,901287454,Laundry,Express,2026-04-08 23:30,3,360000
+5,Văn Tít,901287454,Laundry,Express,2026-04-08 8:30,3,360000

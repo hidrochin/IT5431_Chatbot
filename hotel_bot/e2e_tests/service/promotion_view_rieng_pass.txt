@@ -1,0 +1,12 @@
+test_cases:
+  - test_case: "Inquiry promotions for Food - Success"
+    steps:
+      - user: "Are there any promotions available?"
+      - bot: "Which service are you interested in? (You can say 'all' to see all deals)"
+      - user: "I'm interested in Food"
+      - slot_was_set:
+          - service_category: "Food"
+      - bot: |-
+          Current promotions for Food:
+          - Food Buffet Special: 20% off Buffet → 160,000 VND
+          - Food A la carte Offer: 10% off A la carte → 135,000 VND

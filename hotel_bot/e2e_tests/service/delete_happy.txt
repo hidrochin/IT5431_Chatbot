@@ -1,0 +1,16 @@
+test_cases:
+  - test_case: "cancel booking success with yes"
+    steps:
+      - user: "I want to cancel my booking"
+      - bot: "Could you please provide your Booking Reference ID?"
+      - user: "4"
+      - slot_was_set:
+          - booking_service_id: "4"
+      # BẮT BUỘC CÓ: Để Flow biết là đã qua bước check 2h thành công
+      - slot_was_set:
+          - is_cancellable: true
+      - bot: "Are you sure you want to cancel booking ID 4? Please reply with 'yes' or 'no'."
+      - user: "yes"
+      - slot_was_set:
+          - confirm_cancellation: "True"
+      - bot: "Your booking 4 has been successfully cancelled."

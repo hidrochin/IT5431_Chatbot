@@ -1,0 +1,56 @@
+version: "3.1"
+
+slots:
+  booking_service_id:
+    type: text
+    mappings:
+      - type: from_llm
+
+  service_category:
+    type: text
+    mappings:
+      - type: from_llm
+
+  confirm_cancellation:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_llm
+
+  is_cancellable: 
+    type: bool 
+    influence_conversation: true # Quan trọng: Phải là true để Flow rẽ nhánh if/else
+    mappings: 
+      - type: from_llm
+
+responses:
+  utter_ask_booking_service_id:
+    - text: "Could you please provide your Booking Reference ID?"
+
+  utter_service_not_found:
+    - text: "I couldn't find any booking with ID {booking_service_id}."
+
+  utter_cancel_denied_policy:
+    - text: "Cancellation failed. This service cannot be cancelled within 2 hours."
+
+  utter_cancel_aborted:
+    - text: "Cancellation request has been aborted."
+
+  utter_service_cancel_success:
+    - text: "Your booking {booking_service_id} has been successfully cancelled."
+
+  utter_ask_service_category:
+    # Gợi ý thêm để user biết có thể xem toàn bộ
+    - text: "Which service are you interested in? (You can say 'all' to see all deals)"
+
+  utter_ask_confirm_cancellation:
+    - text: "Are you sure you want to cancel booking ID {booking_service_id}? Please reply with 'yes' or 'no'."
+
+  utter_no_promotions:
+    - text: "Currently, there are no promotions for {service_category}."
+
+actions:
+  - action_view_service_booking
+  - action_handle_cancellation
+  - action_confirm_cancellation
+  - action_show_promotions
