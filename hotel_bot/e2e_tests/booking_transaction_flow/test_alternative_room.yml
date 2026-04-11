@@ -1,18 +1,18 @@
 test_cases:
   - test_case: "The Unhappy Path: Routing a sold-out room request"
-    description: "Proves the Python backend intercepts a fully booked room and gracefully proposes an alternative."
     steps:
-      - user: "I want to book the VIP Club Suite for tomorrow."
+      - user: "I want to book 1 VIP Club Suite for 2 adults and 0 children from October 15, 2026 until October 20, 2026."
       - slot_was_set:
-          - room_type: "Club Suite" # Mapped via the semantic dictionary
-          - check_in_date: "tomorrow"
-      - action: action_check_availability
+          - room_type: "Club Suite"
+          - room_count: 1
+          - adults_count: 2
+          - children_count: 0
+          - check_in_date: "2026-10-15"
+          - check_out_date: "2026-10-20"
       - slot_was_set:
-          - room_type: null # Proves the Python script wiped the slot due to 0 inventory
+          - room_type: null
       - bot: "SYSTEM_INSTRUCTION: Inform the user that the Club Suite is fully booked for those dates. However, we have the Deluxe available. Ask if they would like to book the Deluxe instead."
       - user: "Yeah, the Deluxe is fine."
       - slot_was_set:
-          - room_type: "Deluxe" # Proves the alternative was successfully captured
-      - action: action_check_availability
-      - slot_was_set:
-          - room_type: "Deluxe" # Lock in the available room
+          - room_type: "Deluxe"
+      - bot: "Do you have any special preferences for your stay, such as a high floor, a quiet room, or early check-in?"

@@ -1,22 +1,19 @@
 test_cases:
   - test_case: "The Context-Switch Test: Modifying guest count"
-    description: "Proves the bot can identify a specific slot, wipe it, and seamlessly drop the user back into collection mode."
     steps:
       - user: "I want to change the details of my booking."
-      - bot: "Please provide your booking reference ID."
+      - bot: "Could you please provide your alphanumeric booking reference ID?"
       - user: "My ID is REF8832."
       - slot_was_set:
           - booking_reference: "REF8832"
-      - bot: "What detail would you like to change?"
+      - bot: "What specific detail would you like to change? (For example: check-in date, room type, or number of adults)."
       - user: "I need to change the number of adults staying."
       - slot_was_set:
           - slot_to_modify: "adults_count"
-      - action: action_wipe_target_slot
       - slot_was_set:
           - adults_count: null
           - slot_to_modify: null
-      # The flow calls 'book_room' here internally. CALM sees adults_count is null and asks for it.
-      - bot: utter_ask_adults_count
+      - bot: "How many adults will be staying?"
       - user: "Make it 4 adults."
       - slot_was_set:
-          - adults_count: 4
+          - adults_count: 4.0

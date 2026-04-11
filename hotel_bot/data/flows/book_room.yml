@@ -3,16 +3,27 @@ flows:
     description: "Use this flow to help a user book a hotel room."
     steps:
       # Step 1: Collect Dates
-      - collect: check_in_date
+      - id: ask_check_in
+        collect: check_in_date
         description: "The date the user wants to check into the hotel."
-      - collect: check_out_date
+      - id: ask_check_out
+        collect: check_out_date
         description: "The date the user wants to check out. Must be after check-in."
       
       # Step 2: Validate Dates via Python Action
       - action: action_validate_booking_dates
+        next:
+        - if: not slots.check_in_date
+          then: ask_check_in
+          # If Python wiped the check-out date, jump back to ask for it again
+        - if: not slots.check_out_date
+          then: ask_check_out
+          # If both dates are valid, jump to Step 3
+        - else: ask_room_count
       
       # Step 3: Collect Room and Guest Details
-      - collect: room_count
+      - id: ask_room_count
+        collect: room_count
         description: "The total number of rooms the user wishes to book."
       - collect: adults_count
         description: "The number of adults (above 12 years old) staying."
@@ -51,6 +62,7 @@ flows:
         next:
           - if: slots.confirm_booking
             then:
+              - action: action_finalize_booking
               - action: utter_booking_confirmed
                 next: END
           - else:
