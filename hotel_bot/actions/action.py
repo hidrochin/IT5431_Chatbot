@@ -222,7 +222,7 @@ class ActionHandleCancellation(Action):
 
             # --- TRƯỜNG HỢP 3: Hợp lệ (Tương lai xa > 2 tiếng) ---
             print(f"DEBUG: [ALLOWED] ID {booking_id} - Đủ điều kiện hủy (Service: {service_time})")
-            return [SlotSet("is_cancellable", true)]
+            return [SlotSet("is_cancellable", True)]
 
         except Exception as e:
             print(f"Error in ActionHandleCancellation: {str(e)}")
