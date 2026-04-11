@@ -1,0 +1,22 @@
+flows:
+  faq:
+    description: >
+      Use this flow to answer any factual question a hotel guest might have
+      about the property. Trigger this flow for questions whose answer would
+      be found in a hotel information brochure or FAQ page, including:
+      room types, room rates and pricing, room size or amenities,
+      hotel facilities such as pool, spa, gym, restaurant, bar or parking,
+      hotel services such as wifi, breakfast, laundry, airport transfer or room service,
+      hotel policies such as check-in time, check-out time, cancellation rules,
+      deposit requirements, pet policy, smoking policy or age requirements,
+      hotel location, address, distance from airport, nearby attractions or transport,
+      and general hotel information such as contact details, star rating,
+      spoken languages, accessibility or group bookings.
+      This flow must be triggered for ANY informational question about the hotel,
+      regardless of how the guest phrases it.
+    steps:
+      - collect: faq_query
+        description: The guest's hotel information question
+        ask_before_filling: false
+      - action: action_faq_lookup
+      - action: action_reset_faq_slots

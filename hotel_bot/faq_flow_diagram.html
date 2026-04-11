@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>FAQ Flow Diagram</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    body {
+      background: #ffffff;
+      margin: 0;
+      padding: 40px;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h2 {
+      color: #333;
+      margin-bottom: 24px;
+      font-size: 18px;
+      letter-spacing: 0.5px;
+    }
+    #diagram-wrapper {
+      background: #ffffff;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 32px 48px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+  </style>
+</head>
+<body>
+  <h2>FAQ Flow — hotel_bot (Rasa Pro CALM)</h2>
+  <div id="diagram-wrapper">
+    <div class="mermaid">
+flowchart TD
+    A(["User Message"]):::user
+    --> B["CompactLLMCommandGenerator\nStage 1: Flow Retrieval - FAISS Embedding Similarity\nStage 2: LLM Command Generation"]:::core
+
+    B --> C{"Flow matched?"}:::decision
+
+    C -->|"book_room / chitchat / other"| X["[ Other Flows ]"]:::other
+
+    C -->|faq| D["LLM Command: start faq"]:::core
+
+    D --> E["FlowPolicy\nexecutes faq flow"]:::policy
+
+    E --> F["collect: faq_query\nask_before_filling: false"]:::step
+
+    F --> G{"faq_query filled?"}:::decision
+
+    G -->|"yes - inferred from context"| J["action_faq_lookup"]:::action
+    G -->|no| H["utter_ask_faq_query"]:::utter
+    H --> H2(["User replies"]):::user
+    H2 --> J
+
+    J --> IDX{"_faq_index.pkl\ncache valid?"}:::decision
+
+    IDX -->|"yes - hash match"| RET
+    IDX -->|"no / first run"| EMB1
+
+    EMB1["_embed all CSV rows\nlitellm.embedding\ntext-embedding-3-small"]:::rag
+    --> BLD["faiss.IndexFlatIP\nnormalize + add vectors"]:::rag
+    --> SAV["_save_cache\n_faq_index.pkl"]:::rag
+    --> RET
+
+    RET["_retrieve query\n_embed query vector\nfaiss.search top-6\nfilter score >= 0.30"]:::rag
+
+    RET --> CTX{"context\nfound?"}:::decision
+
+    CTX -->|"yes - top-k docs"| LLM["_call_llm\nlitellm.completion\ngpt-4o-mini\ncontext + query"]:::llm
+    CTX -->|"no result"| FALL["fallback: load general.csv\nrefer to front desk"]:::utter
+
+    LLM --> N["dispatcher.utter_message\nFAQ Answer to User"]:::response
+    FALL --> N
+
+    N --> O["action_reset_faq_slots\nSlotSet faq_query = None"]:::action
+
+    O --> P(["faq flow - End"]):::end
+
+    classDef user     fill:#dbeafe,stroke:#3b82f6,color:#1e3a8a
+    classDef core     fill:#fef9c3,stroke:#ca8a04,color:#713f12
+    classDef decision fill:#fff7ed,stroke:#ea580c,color:#7c2d12
+    classDef policy   fill:#f0fdf4,stroke:#16a34a,color:#14532d
+    classDef step     fill:#f0fdf4,stroke:#16a34a,color:#14532d
+    classDef action   fill:#ede9fe,stroke:#7c3aed,color:#3b0764
+    classDef rag      fill:#fdf4ff,stroke:#c026d3,color:#4a044e
+    classDef llm      fill:#fef9c3,stroke:#ca8a04,color:#713f12
+    classDef utter    fill:#fce7f3,stroke:#db2777,color:#831843
+    classDef response fill:#ecfdf5,stroke:#059669,color:#064e3b
+    classDef other    fill:#f1f5f9,stroke:#94a3b8,color:#475569,stroke-dasharray:5 5
+    classDef end      fill:#f0fdf4,stroke:#16a34a,color:#14532d
+    </div>
+  </div>
+
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'default',
+      flowchart: {
+        curve: 'linear',
+        padding: 20,
+        nodeSpacing: 50,
+        rankSpacing: 60
+      }
+    });
+  </script>
+</body>
+</html>

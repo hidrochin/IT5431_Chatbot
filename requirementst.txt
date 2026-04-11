@@ -3,6 +3,8 @@ python-dotenv
 google-generativeai
 sentence-transformers
 dateparser
+faiss-cpu
+numpy
 langchain_text_splitters
 langchain_google_genai
 pypdf
